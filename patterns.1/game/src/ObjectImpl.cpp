@@ -10,7 +10,7 @@
 bool Object::drawFigure() {
     std::size_t lines_number = m_signs->size();
     for (unsigned line_no = 0; line_no < lines_number; ++line_no) {
-        std::string* line = &m_signs->at(line_no);
+        const std::string* line = &m_signs->at(line_no);
         // Move && print something.
         mvprintw(m_yShift + line_no, m_xShift, line->c_str());
     }
@@ -35,4 +35,28 @@ bool Object::setPos(unsigned y, unsigned x) {
     m_yShift = y;
     m_xShift = x;
     return true;
+}
+
+Object::Object(const ObjectName &name,
+               const ObjectRepresentation* repr,
+               ObjectShift y_pos, ObjectShift x_pos)
+        : m_objectName(name),
+          m_signs(repr),
+          m_yShift(y_pos),
+          m_xShift(x_pos)
+{ }
+
+bool Object::move(unsigned nSigns, Direction direction) {
+    switch (direction) {
+        case Direction::left: {
+            m_yShift -= nSigns;
+        }
+        case Direction::right: {
+            m_yShift += nSigns;
+        }
+        default: {
+            // Todo : implement other directions if needed.
+        }
+    }
+    return false;
 }

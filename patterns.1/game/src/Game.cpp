@@ -65,9 +65,24 @@ unsigned Game::_generateNewObjects_() {
     return 0;
 }
 
-bool Game::_loadObjects_(const std::istream &objectsList) {
+bool Game::_loadObjects_(std::istream &objectsList) {
 
-    objectsList.getline()
+    while (!objectsList.eof()) {
+        std::string fileName;
+        ObjectRepresentation objectRepresentation;
+
+        objectsList >> fileName;
+        std::ifstream currentFileStream(fileName, std::ios_base::in);
+        while (!currentFileStream.eof()) {
+            char line[MAX_OBJECT_LINE_LENGHT];
+            currentFileStream.getline(line, MAX_OBJECT_LINE_LENGHT);
+            objectRepresentation.push_back(std::string(line));
+
+            // todo : доделать
+        }
+    }
+
+
     return false;
 }
 

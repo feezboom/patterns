@@ -9,6 +9,7 @@
 #include <ncurses.h>
 #include <unordered_set>
 #include <IObject.h>
+#include "context.h"
 
 class Game {
 public:
@@ -31,7 +32,7 @@ private:
      *      True on success.
      */
 
-    bool _loadObjects_(const std::istream& objectsList);
+    bool _loadObjects_(std::istream &objectsList);
 
     /**
      *
@@ -53,6 +54,8 @@ private:
 
     GameField m_field;
     unsigned m_fps;
+
+    ObjectsRepresentations existentObjects;
 };
 
 

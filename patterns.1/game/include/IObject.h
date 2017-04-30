@@ -8,9 +8,6 @@
 #include <Direction.h>
 #include <memory>
 
-typedef std::vector<std::string> ObjectRepresentation;
-typedef std::vector<ObjectRepresentation> ObjectsRepresentations;
-
 class IObject {
 public:
     virtual bool drawFigure() = 0;

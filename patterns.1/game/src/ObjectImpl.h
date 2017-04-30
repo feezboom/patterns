@@ -8,11 +8,13 @@
 #include <IObject.h>
 #include <string>
 #include <vector>
+#include <context.h>
 
 
 class Object : public IObject {
 public:
-    Object() { return; };
+    Object(const ObjectName& name, const ObjectRepresentation* repr,
+           ObjectShift y_pos, ObjectShift x_pos);
     /**
      * @brief
      *      Init Object from some source
@@ -23,10 +25,11 @@ public:
     virtual bool drawFigure() override;
     virtual bool eraseFigure() override;
     virtual bool setPos(unsigned y, unsigned x) override;
+    virtual bool move(unsigned nSigns, Direction direction);
 
 protected:
-    std::string m_objectName;
-    std::vector<std::string>* m_signs;
+    const std::string m_objectName;
+    const ObjectRepresentation* m_signs;
     unsigned m_xShift, m_yShift;
 };
 

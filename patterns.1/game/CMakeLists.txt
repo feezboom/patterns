@@ -7,6 +7,6 @@ find_package(Curses REQUIRED)
 
 include_directories(include)
 
-set(SOURCE_FILES main.cpp src/Game.cpp include/Game.h include/IObject.h src/ObjectImpl.h src/ObjectImpl.cpp include/Direction.h src/ObjectFactory.cpp include/ObjectFactory.h)
+set(SOURCE_FILES main.cpp src/Game.cpp include/Game.h include/IObject.h src/ObjectImpl.h src/ObjectImpl.cpp include/Direction.h src/ObjectFactory.cpp include/ObjectFactory.h include/context.h)
 add_executable(game ${SOURCE_FILES})
 target_link_libraries(game ${CURSES_LIBRARIES})
