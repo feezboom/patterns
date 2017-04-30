@@ -13,16 +13,20 @@
 class Object : public IObject {
 public:
     Object() { return; };
-    // init figure from some source
+    /**
+     * @brief
+     *      Init Object from some source
+     * @return
+     */
     inline virtual bool initFigure() { return true; }
 
-    virtual bool drawFigure();
-    virtual bool eraseFigure();
-    virtual bool setPos(unsigned y, unsigned x);
+    virtual bool drawFigure() override;
+    virtual bool eraseFigure() override;
+    virtual bool setPos(unsigned y, unsigned x) override;
 
 protected:
-    std::wstring m_objectName;
-    std::vector<std::string> m_signs;
+    std::string m_objectName;
+    std::vector<std::string>* m_signs;
     unsigned m_xShift, m_yShift;
 };
 

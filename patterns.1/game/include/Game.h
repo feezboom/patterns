@@ -17,13 +17,33 @@ public:
     ~Game();
 private:
 
-    bool updateScreenSizes();
+    bool _updateScreenSizes_();
+
+    /**
+     * @brief
+     *      Loads list of objects from objectList
+     *      inside itself.
+     * @param objectsList
+     *      Istream, which contains names of files with
+     *      ASCII objects representations.
+     *
+     * @return
+     *      True on success.
+     */
+
+    bool _loadObjects_(const std::istream& objectsList);
+
+    /**
+     *
+     * @return unsigned - Number of new generated objects
+     */
+    unsigned _generateNewObjects_();
 
     /**
      * @param unsigned - number of pixels to move all objects
      * @return unsigned - number of objects disappeared
      */
-    unsigned moveObjects(unsigned nPixels = 1, Direction direction = right);
+    unsigned _moveObjects_(unsigned nPixels = 1, Direction direction = right);
 private:
     class GameField {
     public:

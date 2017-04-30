@@ -8,6 +8,8 @@
 #include <Direction.h>
 #include <memory>
 
+typedef std::vector<std::string> ObjectRepresentation;
+typedef std::vector<ObjectRepresentation> ObjectsRepresentations;
 
 class IObject {
 public:
@@ -15,6 +17,7 @@ public:
     virtual bool eraseFigure() = 0;
     virtual bool move(unsigned nPixels, Direction direction) = 0;
     virtual bool setPos(unsigned y, unsigned x) = 0;
+    inline virtual ~IObject() {};
 };
 
 typedef std::shared_ptr<IObject> IObjectPtr;
