@@ -73,8 +73,8 @@ namespace game {
         unsigned int _moveObstacles_(ShiftType nSymbols = 1,
                                      Direction direction = left);
 
-        ShiftType _moveBullets_(ShiftType nSymbols = 1,
-                               Direction direction = right);
+        unsigned _moveBulletsAndCheckCollisions_(ShiftType nSymbols = 1,
+                                                  Direction direction = right);
 
         bool _moveRocket_(Direction direction);
 
@@ -120,13 +120,6 @@ namespace game {
         unsigned int _removeOutOfScreenObjects_();
 
         unsigned _generateUpdateObstacles_(bool generate, bool move, unsigned maxToGen);
-
-        /**
-         *
-         * @return
-         */
-        bool _removeObjectsCollidedByBullets_();
-
 
         bool _isCollision_(IObjectPtr obj1, IObjectPtr obj2);
 
