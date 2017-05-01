@@ -11,6 +11,8 @@ namespace game {
         left = -1,
         noMove = 0,
         right = 1,
+        up = 2,
+        down = 3,
     };
 
 }

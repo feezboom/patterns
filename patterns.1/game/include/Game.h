@@ -44,7 +44,6 @@ namespace game {
          */
         bool _updateScreenSizes_();
 
-        ObjectASCII _loadObject_(std::istream &objectStream) const;
 
         /**
          * @brief
@@ -72,7 +71,14 @@ namespace game {
          * @return
          */
         unsigned _moveObstacles_(unsigned nSymbols = 1,
-                                 Direction direction = right);
+                                 Direction direction = left);
+
+        unsigned _moveBullets_(unsigned nSymbols = 1,
+                               Direction direction = right);
+
+        bool _moveRocket_(Direction direction);
+
+        bool _generateBullet_(const Point& position);
 
         /**
          *
@@ -96,6 +102,12 @@ namespace game {
          */
         unsigned int _removeOutOfScreenObjects_();
 
+        /**
+         *
+         * @return
+         */
+        static bool _keyPressed_(void);
+
     private:
         class GameField {
         public:
@@ -103,6 +115,7 @@ namespace game {
 
         public:
             std::list<IObjectPtr> objects;
+            IObjectPtr rocket;
             unsigned xMax, yMax;
         };
 
@@ -111,6 +124,8 @@ namespace game {
         unsigned m_obstaclesFPS;
 
         ObjectsStorage m_ASCIIObstacles;
+        ObjectASCII m_ASCIIBullet;
+        ObjectASCII m_ASCIIRocket;
 
     };
 

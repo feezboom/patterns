@@ -12,9 +12,7 @@
 
 namespace game {
 
-    #define MAX_OBJECT_NAME_LENGTH 128
-    #define MAX_FILE_NAME 128
-    #define OBJECT_MAX_LINE_LENGHT 10
+    #define KEY_FIRE 32
 
     // Todo : replace all unsigned with such shit:
     typedef unsigned ShiftType;

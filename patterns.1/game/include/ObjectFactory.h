@@ -17,11 +17,11 @@ namespace game {
 
     class ObjectFactory {
     public:
-        static IObjectPtr createObject(const std::istream &);
+        static IObjectPtr createObject(std::istream&);
 
         static IObjectPtr createObject(const std::string &);
 
-        static IObjectPtr createObject(const std::vector<std::string> &);
+        static IObjectPtr createObject(const ObjectName& name, const ObjectASCII&);
 
         /**
          * @brief
@@ -35,6 +35,7 @@ namespace game {
          */
         static IObjectPtr createRandom(ObjectsStorage &asciiObstacles);
 
+        static ObjectASCII loadObject(std::istream &objectStream);
     };
 
 };

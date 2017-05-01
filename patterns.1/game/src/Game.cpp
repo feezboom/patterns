@@ -18,15 +18,29 @@ using std::for_each;
 
 Game::Game() : m_rocketFPS(100), m_obstaclesFPS(5) {
 //    initscr();
-//    noecho();
-//    curs_set(FALSE);
-    std::string file("../resources/obstacles_list.txt");
-//    std::ifstream obstList(, std::ios_base::in);
-//    assert(obstList);
-    _loadObjects_(file);
+//    noecho(); // Character is not printed if pressed
+//    nodelay(stdscr, TRUE);
+//    curs_set(0); // Makes cursor invisible
+
+    // Create obstacles from files.
+    _loadObjects_("../resources/obstacles_list.txt");
+
+    // Create rocket from file.
+    std::ifstream rocketStream("../resources/rocket", std::ios_base::in);
+    m_ASCIIRocket = ObjectFactory::loadObject(rocketStream);
+    IObjectPtr rocketPtr = ObjectFactory::createObject("rocket", m_ASCIIRocket);
+    m_field.rocket = rocketPtr;
+    rocketStream.close();
+
+    // Create bullet from file.
+    std::ifstream bulletStream("../resources/bullet", std::ios_base::in);
+    m_ASCIIBullet = ObjectFactory::loadObject(bulletStream);
+    IObjectPtr bulletPtr = ObjectFactory::createObject("bullet", m_ASCIIBullet);
+    m_field.addObject(bulletPtr);
+
+
     _updateScreenSizes_();
 }
-
 
 bool Game::startGame() {
     unsigned rocketUpdateDelay = static_cast<unsigned>((10e6 / m_rocketFPS));
@@ -34,8 +48,6 @@ bool Game::startGame() {
 
     // Obviously ( rocketUpdateDelay << obstaclesUpdateDelay )
     unsigned counter{0};
-//    printnum(m_field.xMax);
-//    return false;
 
     while (usleep(rocketUpdateDelay) == 0 /* delay succeeded */ ) {
 //      1) Capture user's pressed button and then update rocket position.
@@ -44,18 +56,41 @@ bool Game::startGame() {
 //      3) Move all obstacles.
 //      4) Update newly generated obstacles on the screen.
 
-        // Update rocket
-
-        // OnShotButtonPressed - bullets : create new & update old ones
-
-        // Update obstacles
         _clearObjectsFromScreen_();
         _removeOutOfScreenObjects_();
+
+        // OnUserPressedButton.
+        if (_keyPressed_()) {
+            int c = getch();
+            switch (c) {
+                case KEY_UP: {
+                    _moveRocket_(Direction::up);
+                    break;
+                }
+                case KEY_DOWN: {
+                    _moveRocket_(Direction::down);
+                    break;
+                }
+                case KEY_FIRE: {
+                    _generateBullet_(m_field.rocket->getPos());
+                    break;
+                }
+                default: {
+                    break;
+                }
+            }
+        }
+
+        // Update bullets
+        _moveBullets_(1, Direction::right);
+        _drawObjectsByType_(eBullet);
+
+        // Update obstacles
         _generateNewObstacles_();
         _moveObstacles_(1, Direction::left);
         _drawObjectsByType_(eObstacle);
+
         std::cout << "\r" << counter++ << std::flush;
-//        printnum(counter++);
         if (counter > 100) {
             break;
         }
@@ -74,13 +109,27 @@ bool Game::_updateScreenSizes_() {
 }
 
 unsigned Game::_moveObstacles_(unsigned int nSymbols, Direction direction) {
+    unsigned counter{0};
     for_each(m_field.objects.begin(),
              m_field.objects.end(), [=](IObjectPtr objectPtr) {
                 if (objectPtr->getType() == ObjectType::eObstacle) {
                     objectPtr->move(nSymbols, direction);
+                    counter++;
                 }
             });
-    return 0;
+    return counter;
+}
+
+unsigned Game::_moveBullets_(unsigned int nSymbols, Direction direction) {
+    unsigned counter{0};
+    for_each(m_field.objects.begin(),
+             m_field.objects.end(), [=](IObjectPtr objectPtr) {
+                if (objectPtr->getType() == ObjectType::eBullet) {
+                    objectPtr->move(nSymbols, direction);
+                    counter++;
+                }
+            });
+    return counter;
 }
 
 unsigned Game::_generateNewObstacles_() {
@@ -107,16 +156,6 @@ unsigned Game::_generateNewObstacles_() {
     return obstaclesToGenerate;
 }
 
-ObjectASCII Game::_loadObject_(std::istream &objectStream) const {
-    ObjectASCII retVal;
-    std::string line;
-    while (!objectStream.eof()) {
-        std::getline(objectStream, line);
-        retVal.push_back(line);
-    }
-    return retVal;
-}
-
 bool Game::_loadObjects_(const std::string &file) {
     std::ifstream objList(file, std::ios_base::in);
 
@@ -135,7 +174,7 @@ bool Game::_loadObjects_(const std::string &file) {
         }
 
         // Filling ObjectASCII
-        ObjectASCII currentObject = _loadObject_(currentFileStream);
+        ObjectASCII currentObject = ObjectFactory::loadObject(currentFileStream);
         m_ASCIIObstacles.push_back(std::make_pair(fileName, currentObject));
         currentFileStream.close();
     }
@@ -169,6 +208,26 @@ unsigned int Game::_removeOutOfScreenObjects_() {
         }
     }
     return removedCount;
+}
+
+bool Game::_keyPressed_(void) {
+    int ch = getch();
+
+    if (ch != ERR) {
+        ungetch(ch);
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool Game::_moveRocket_(Direction direction) {
+    m_field.rocket->move(1, direction);
+    return true;
+}
+
+bool Game::_generateBullet_(const Point& position) {
+
 }
 
     bool Game::GameField::addObject(IObjectPtr objectPtr) {

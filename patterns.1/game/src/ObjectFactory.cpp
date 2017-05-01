@@ -5,13 +5,14 @@
 #include <cstdlib>
 
 #include <ObjectFactory.h>
+#include <context.h>
 
 #include "ObjectImpl.h"
 
 namespace game {
 
-IObjectPtr ObjectFactory::createObject(const std::istream &) {
-    // Todo : implement some shit here.
+IObjectPtr ObjectFactory::createObject(std::istream &objectStream) {
+    ObjectASCII objectASCII = loadObject(objectStream);
     return IObjectPtr();
 }
 
@@ -20,23 +21,33 @@ IObjectPtr ObjectFactory::createObject(const std::string &) {
     return IObjectPtr();
 }
 
-IObjectPtr ObjectFactory::createObject(const std::vector<std::string> &) {
-    // Todo : and do not forget about this one here.
-    return IObjectPtr();
+IObjectPtr ObjectFactory::createObject(const ObjectName& name, const ObjectASCII& objectASCII) {
+    IObjectPtr objectPtr = IObjectPtr(new Object(name, &objectASCII));
+    return objectPtr;
 }
 
 IObjectPtr ObjectFactory::createRandom(ObjectsStorage &asciiObstacles) {
 
-        printstry(1, "HEllo, world");
-        printnumy(2, asciiObstacles.size())
+    printstry(1, "HEllo, world");
+    printnumy(2, asciiObstacles.size())
 
-        srand(static_cast<unsigned>(time(0)));
-        unsigned chose = rand() % (unsigned) asciiObstacles.size();
+    srand(static_cast<unsigned>(time(0)));
+    unsigned chose = rand() % (unsigned) asciiObstacles.size();
 
-        const ObjectName &chosenName = asciiObstacles[chose].first;
-        const ObjectASCII &chosenObject = asciiObstacles[chose].second;
-        IObjectPtr retVal = std::shared_ptr<Object>(new Object(chosenName, &chosenObject));
+    const ObjectName &chosenName = asciiObstacles[chose].first;
+    const ObjectASCII &chosenObject = asciiObstacles[chose].second;
+    IObjectPtr retVal = std::shared_ptr<Object>(new Object(chosenName, &chosenObject));
 
+    return retVal;
+}
+
+    ObjectASCII ObjectFactory::loadObject(std::istream &objectStream) {
+        ObjectASCII retVal;
+        std::string line;
+        while (!objectStream.eof()) {
+            std::getline(objectStream, line);
+            retVal.push_back(line);
+        }
         return retVal;
     }
 

@@ -51,12 +51,23 @@ namespace game {
     bool Object::move(unsigned nSigns, Direction direction) {
         switch (direction) {
             case Direction::left: {
-                m_yShift -= nSigns;
+                m_xShift -= nSigns;
+                break;
             }
             case Direction::right: {
+                m_xShift += nSigns;
+                break;
+            }
+            case Direction::up: {
+                m_yShift -= nSigns;
+                break;
+            }
+            case Direction::down: {
                 m_yShift += nSigns;
+                break;
             }
             default: {
+                break;
                 // Todo : implement other directions if needed.
             }
         }
