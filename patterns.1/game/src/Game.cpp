@@ -90,10 +90,10 @@ bool Game::startGame() {
 //
 //        _drawAllObjects_();
 
-        std::cout << "\r" << counter++ << std::flush;
-        if (counter > 1000000) {
-            break;
-        }
+        printnumy(m_field.yMax-1, counter++);
+//        if (counter > 1000000) {
+//            break;
+//        }
     }
     return true;
 }

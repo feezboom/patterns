@@ -24,7 +24,7 @@ namespace game {
     bool Object::eraseFigure() {
         std::size_t lines_number = m_signs->size();
         for (unsigned line_no = 0; line_no < lines_number; ++line_no) {
-            std::string spaces = std::string(m_signs->size(), ' ');
+            std::string spaces = std::string(m_signs->at(line_no).size(), ' ');
             mvprintw(m_yShift + line_no, m_xShift, spaces.c_str());
         }
 
