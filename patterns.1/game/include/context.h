@@ -48,7 +48,7 @@ namespace game {
 
 #define printstrnumxy(y, x, str, num) \
     mvprintw(y,x,(str + std::to_string(num)).c_str()); \
-    refresh(); \
+//    refresh(); \
 
 }
 

@@ -31,8 +31,8 @@ IObjectPtr ObjectFactory::createRandom(ObjectsStorage &asciiObstacles) {
     srand(static_cast<unsigned>(time(0)));
     unsigned chose = rand() % (unsigned) asciiObstacles.size();
 
-    const ObjectName &chosenName = asciiObstacles[chose].first;
-    const ObjectASCII &chosenObject = asciiObstacles[chose].second;
+    const ObjectName& chosenName = asciiObstacles[chose].first;
+    const ObjectASCII& chosenObject = asciiObstacles[chose].second;
     IObjectPtr retVal = std::shared_ptr<Object>(new Object(chosenName, &chosenObject));
 
     return retVal;

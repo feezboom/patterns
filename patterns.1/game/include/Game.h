@@ -13,6 +13,7 @@
 
 #include <IObject.h>
 #include <context.h>
+#include <unordered_set>
 
 namespace game {
 
@@ -98,11 +99,15 @@ namespace game {
         bool _drawObjectsByType_(ObjectType type);
 
         bool _drawAllObjects_() const {
-            for_each(m_field.objects.begin(),
-                     m_field.objects.end(), [](IObjectPtr objectPtr) {
-                        objectPtr->drawFigure();
-                    });
+//            for_each(m_field.objects.begin(),
+//                     m_field.objects.end(), [](IObjectPtr objectPtr) {
+//                        objectPtr->drawFigure();
+//                    });
+            for (auto i = m_field.objects.begin(); i != m_field.objects.end(); ++i) {
+                (*i)->drawFigure();
+            }
             m_field.rocket->drawFigure();
+            refresh();
             return true;
         }
 
@@ -110,7 +115,7 @@ namespace game {
          *
          * @return
          */
-        ShiftType _removeOutOfScreenObjects_();
+        unsigned int _removeOutOfScreenObjects_();
 
         /**
          *

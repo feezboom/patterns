@@ -11,10 +11,12 @@ namespace game {
 
     bool Object::drawFigure() {
         std::size_t lines_number = m_signs->size();
-        for (unsigned line_no = 0; line_no < lines_number; ++line_no) {
-            const std::string *line = &m_signs->at(line_no);
+        for (ShiftType line_no = 0; line_no < lines_number; ++line_no) {
+            const std::string& line = m_signs->at(line_no);
             // Move && print something.
-            mvprintw(m_yShift + line_no, m_xShift, line->c_str());
+            std::string debug = std::to_string(line.size()) + line;
+            mvprintw(m_yShift + line_no, m_xShift, line.c_str());
+//            refresh();
         }
         return true;
     }
@@ -26,6 +28,7 @@ namespace game {
         for (unsigned line_no = 0; line_no < lines_number; ++line_no) {
             std::string spaces = std::string(m_signs->at(line_no).size(), ' ');
             mvprintw(m_yShift + line_no, m_xShift, spaces.c_str());
+//            refresh();
         }
 
         return true;

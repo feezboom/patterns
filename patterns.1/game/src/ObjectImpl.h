@@ -40,7 +40,9 @@ public:
 
     virtual bool move(ShiftType nSigns, Direction direction);
 
-protected:
+//protected:
+    public:
+
     const std::string m_objectName;
     const ObjectASCII *m_signs;
     ShiftType m_xShift, m_yShift;

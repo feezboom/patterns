@@ -11,6 +11,7 @@
 #include <Game.h>
 #include <ObjectFactory.h>
 #include <iostream>
+#include "ObjectImpl.h"
 
 namespace game {
 
@@ -26,7 +27,7 @@ Game::Game() : m_rocketFPS(1500), m_obstaclesFPS(5) {
     _loadObjects_("../resources/obstacles_list.txt");
 
     // Create rocket from file.
-    std::ifstream rocketStream("../resources/apple", std::ios_base::in);
+    std::ifstream rocketStream("../resources/kettle", std::ios_base::in);
     m_ASCIIRocket = ObjectFactory::loadObject(rocketStream);
     IObjectPtr rocketPtr = ObjectFactory::createObject("rocket", m_ASCIIRocket);
     m_field.rocket = rocketPtr;
@@ -90,7 +91,6 @@ bool Game::startGame() {
                 }
                 case KEYDEBUG: {
                     nodelay(stdscr, FALSE);
-                    _clearObjectsFromScreen_();
                     while ((c=getch()) != KEYDEBUG) {
                         m_field.rocket->eraseFigure();
 
@@ -103,6 +103,42 @@ bool Game::startGame() {
                         } else if (c == KEYDOWN) {
                             m_field.rocket->move(1, down);
                         }
+
+                        if (c == 'q') {
+                            _drawAllObjects_();
+                            c = getch();
+                            if (c == 'w') {
+                                int x = m_field.xMax/2;
+                                int y = m_field.yMax/2;
+                                auto& p = m_field.objects.begin().operator*();
+                                std::shared_ptr<Object> pp = std::dynamic_pointer_cast<Object>(p);
+                                std::vector<std::string> q = *pp->m_signs;
+                                for (int i = 0; i < q.size(); ++i) {
+                                    mvprintw(y+i,x, q[i].c_str());
+                                }
+                            }
+                        }
+                        if (c == 'Q') {
+                            _clearObjectsFromScreen_();
+                        }
+
+
+                        if (c == 'o') {
+                            const IObjectPtr& o = m_field.objects.begin().operator*();
+                            while ((c=getch()) != 'o') {
+                                o->eraseFigure();
+                                if (c == KEYRIGHT) {
+                                    o->move(1, right);
+                                } else if (c == KEYLEFT) {
+                                    o->move(1, left);
+                                } else if (c == KEYUP) {
+                                    o->move(1, up);
+                                } else if (c == KEYDOWN) {
+                                    o->move(1, down);
+                                }
+                                o->drawFigure();
+                            }
+                        }
                         m_field.rocket->drawFigure();
 
                     }
@@ -113,6 +149,8 @@ bool Game::startGame() {
                 }
             }
         }
+
+        _clearObjectsFromScreen_();
 
         // Update bullets
         _moveBullets_(1, Direction::right);
@@ -125,6 +163,7 @@ bool Game::startGame() {
         m_field.rocket->drawFigure();
 
         printstrnumxy(m_field.yMax-1, 0, "Iteration: ", counter++)
+        printstrnumxy(m_field.yMax-1, 120, "obst count : ", m_field.objects.size())
     }
     return true;
 }
@@ -180,7 +219,7 @@ ShiftType Game::_generateNewObstacles_(ShiftType maxObjects) {
 
         // Generate random position for it.
         srand(static_cast<unsigned>(time(0)));
-        ShiftType yPos = rand() % m_field.yMax, xPos{m_field.xMax - 1};
+        ShiftType yPos = rand() % m_field.yMax, xPos{m_field.xMax - 8};
         generated->setPos(yPos, xPos);
         generated->setType(ObjectType::eObstacle);
 
@@ -228,8 +267,8 @@ bool Game::_drawObjectsByType_(ObjectType type) {
     return true;
 }
 
-ShiftType Game::_removeOutOfScreenObjects_() {
-    ShiftType removedCount{0};
+unsigned int Game::_removeOutOfScreenObjects_() {
+    unsigned removedCount{0};
 
     // Iterating over objects which exist in the m_field.
     for (auto i = m_field.objects.begin();
@@ -238,7 +277,8 @@ ShiftType Game::_removeOutOfScreenObjects_() {
         // If object is out of bounds then erase it.
         ShiftType x_coord = (*i)->getPos().x;
         if (x_coord > m_field.xMax || x_coord <= 0) {
-            m_field.objects.erase(i++);
+            m_field.objects.erase(i);
+            i = m_field.objects.begin();
             removedCount++;
         }
     }
@@ -275,7 +315,7 @@ bool Game::_generateBullet_(const Point& position) {
 }
 
 bool Game::GameField::addObject(IObjectPtr objectPtr) {
-    objects.insert(objects.begin(), objectPtr);
+    objects.push_front(objectPtr);
     return true;
 }
 
