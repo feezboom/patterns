@@ -23,16 +23,13 @@ IObjectPtr ObjectFactory::createObject(const std::vector<std::string> &) {
     return IObjectPtr();
 }
 
-IObjectPtr ObjectFactory::createRandom(const std::vector<ObjectName> &names,
-                                       const ObjectsRepresentations &asciiRepresentations,
-                                       unsigned max_yShift) {
+IObjectPtr ObjectFactory::createRandom(ObjectsStorage &asciiRepresentations) {
     srand(static_cast<unsigned>(time(0)));
     unsigned chose = rand() % (unsigned) asciiRepresentations.size();
-    unsigned y_shift = rand() % max_yShift;
 
-    const ObjectName& name = names[chose];
-    const ObjectRepresentation& chosenObject = asciiRepresentations[chose];
-    IObjectPtr retVal = std::shared_ptr<Object>(new Object(name, &chosenObject, y_shift, 0));
+    const ObjectName& chosenName = asciiRepresentations[chose].first;
+    const ObjectASCII& chosenObject = asciiRepresentations[chose].second;
+    IObjectPtr retVal = std::shared_ptr<Object>(new Object(chosenName, &chosenObject));
 
-    return IObjectPtr();
+    return retVal;
 }

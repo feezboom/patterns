@@ -6,10 +6,12 @@
 #define GAME_GAME_H
 
 #include <vector>
-#include <ncurses.h>
 #include <unordered_set>
+
+#include <ncurses.h>
+
 #include <IObject.h>
-#include "context.h"
+#include <context.h>
 
 class Game {
 public:
@@ -18,6 +20,10 @@ public:
     ~Game();
 private:
 
+    /**
+     *
+     * @return
+     */
     bool _updateScreenSizes_();
 
     /**
@@ -31,7 +37,6 @@ private:
      * @return
      *      True on success.
      */
-
     bool _loadObjects_(std::istream &objectsList);
 
     /**
@@ -41,10 +46,12 @@ private:
     unsigned _generateNewObjects_();
 
     /**
-     * @param unsigned - number of pixels to move all objects
-     * @return unsigned - number of objects disappeared
+     *
+     * @param nSymbols
+     * @param direction
+     * @return
      */
-    unsigned _moveObjects_(unsigned nPixels = 1, Direction direction = right);
+    unsigned _moveObjects_(unsigned nSymbols = 1, Direction direction = right);
 private:
     class GameField {
     public:
@@ -55,7 +62,8 @@ private:
     GameField m_field;
     unsigned m_fps;
 
-    ObjectsRepresentations existentObjects;
+    ObjectsStorage m_existentObjects;
+
 };
 
 

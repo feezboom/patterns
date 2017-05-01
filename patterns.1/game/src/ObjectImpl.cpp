@@ -38,7 +38,7 @@ bool Object::setPos(unsigned y, unsigned x) {
 }
 
 Object::Object(const ObjectName &name,
-               const ObjectRepresentation* repr,
+               const ObjectASCII* repr,
                ObjectShift y_pos, ObjectShift x_pos)
         : m_objectName(name),
           m_signs(repr),

@@ -15,7 +15,6 @@
 
 
 class ObjectFactory {
-    typedef std::vector<ObjectRepresentation> ObjectsRepresentations;
 public:
     static IObjectPtr createObject(const std::istream&);
     static IObjectPtr createObject(const std::string&);
@@ -24,14 +23,14 @@ public:
     /**
      * @brief
      *      Creates random object from given list of objects
-     * @param names
-     * @param asciiRepresentations
-     * @param max_yShift - max y shift for object to generate. (pixels number)
-     * @return IObjectPtr - pointer to just created object
+     * @param names -
+     *      Vector of existent objects
+     * @param asciiRepresentations -
+     *      Vector of ascii representations of objects (vector<vector<string>>)
+     * @return IObjectPtr -
+     *      Shared_ptr to just created object
      */
-    static IObjectPtr createRandom(const std::vector<ObjectName>& names,
-                                   const ObjectsRepresentations& asciiReprs,
-                                   unsigned max_yShift);
+    static IObjectPtr createRandom(ObjectsStorage& asciiReprs);
 
 };
 

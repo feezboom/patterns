@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <Game.h>
 #include <ObjectFactory.h>
+#include <iostream>
 
 using std::for_each;
 
@@ -40,49 +41,56 @@ bool Game::_updateScreenSizes_() {
     return true;
 }
 
-unsigned Game::_moveObjects_(unsigned int nPixels, Direction direction) {
+unsigned Game::_moveObjects_(unsigned int nSymbols, Direction direction) {
     for_each(m_field.m_objects.begin(),
-             m_field.m_objects.end(), [nPixels, direction](IObjectPtr object) {
-        object->move(nPixels, direction);
+             m_field.m_objects.end(), [=](IObjectPtr object) {
+        object->move(nSymbols, direction);
     });
     return 0;
 }
 
 unsigned Game::_generateNewObjects_() {
-    int iSecret, iGuess;
-
     /* initialize random seed: */
     srand(static_cast<unsigned>(time(0)));
 
-    // Generate number of objects
-    int objectsToGenerate = rand() % 3;
+    // Generate number of objects to generate.
+    unsigned objectsToGenerate = static_cast<unsigned>(rand()) % 3;
 
     for (unsigned i = 0; i < objectsToGenerate; ++i) {
-        IObjectPtr generated = ObjectFactory::createRandom();
+        IObjectPtr generated = ObjectFactory::createRandom(m_existentObjects);
+
     }
 
-    puts ("Congratulations!");
-    return 0;
+    return objectsToGenerate;
 }
 
 bool Game::_loadObjects_(std::istream &objectsList) {
 
     while (!objectsList.eof()) {
         std::string fileName;
-        ObjectRepresentation objectRepresentation;
+        ObjectASCII currentObject;
 
+        // Read object representation from current file
         objectsList >> fileName;
         std::ifstream currentFileStream(fileName, std::ios_base::in);
-        while (!currentFileStream.eof()) {
-            char line[MAX_OBJECT_LINE_LENGHT];
-            currentFileStream.getline(line, MAX_OBJECT_LINE_LENGHT);
-            objectRepresentation.push_back(std::string(line));
 
-            // todo : доделать
+        if (!currentFileStream) {
+            std::cerr << "Error while reading \"" << fileName
+                      << "\". Check if it exists." << std::endl;
+            continue;
         }
+
+        // Filling ObjectASCII
+        while (!currentFileStream.eof()) {
+            char line[OBJECT_MAX_LINE_LENGHT];
+            currentFileStream.getline(line, OBJECT_MAX_LINE_LENGHT);
+            currentObject.push_back(std::string(line));
+        }
+
+        m_existentObjects.push_back(std::make_pair(fileName, currentObject));
     }
 
 
-    return false;
+    return true;
 }
 

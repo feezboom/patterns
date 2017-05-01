@@ -5,22 +5,23 @@
 #ifndef GAME_OBJECTIMPL_H
 #define GAME_OBJECTIMPL_H
 
-#include <IObject.h>
 #include <string>
 #include <vector>
+
+#include <IObject.h>
 #include <context.h>
 
 
 class Object : public IObject {
 public:
-    Object(const ObjectName& name, const ObjectRepresentation* repr,
-           ObjectShift y_pos, ObjectShift x_pos);
+    Object(const ObjectName& name, const ObjectASCII* repr,
+           ObjectShift y_pos = 0, ObjectShift x_pos = 0);
     /**
      * @brief
      *      Init Object from some source
      * @return
      */
-    inline virtual bool initFigure() { return true; }
+    inline virtual bool initObject() { return true; }
 
     virtual bool drawFigure() override;
     virtual bool eraseFigure() override;
@@ -29,7 +30,7 @@ public:
 
 protected:
     const std::string m_objectName;
-    const ObjectRepresentation* m_signs;
+    const ObjectASCII* m_signs;
     unsigned m_xShift, m_yShift;
 };
 

@@ -12,7 +12,7 @@ class IObject {
 public:
     virtual bool drawFigure() = 0;
     virtual bool eraseFigure() = 0;
-    virtual bool move(unsigned nPixels, Direction direction) = 0;
+    virtual bool move(unsigned nSymbols, Direction direction) = 0;
     virtual bool setPos(unsigned y, unsigned x) = 0;
     inline virtual ~IObject() {};
 };
