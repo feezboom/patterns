@@ -7,3 +7,16 @@ Using your bash execute following:
  Then you're to run game :
 
     ./game
+
+
+# How to play
+
+#### Use :
+
+- *space* to shoot.
+
+- *Up / down / left / right arrows* to drive your rocket
+
+#### Your aim :
+
+- Not to die.
