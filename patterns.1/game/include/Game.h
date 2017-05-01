@@ -76,7 +76,7 @@ namespace game {
         unsigned _moveBullets_(unsigned nSymbols = 1,
                                Direction direction = right);
 
-        bool _moveRocket_(Direction direction);
+        bool _moveDrawRocket_(Direction direction);
 
         bool _generateBullet_(const Point& position);
 
@@ -95,6 +95,14 @@ namespace game {
          * @return
          */
         bool _drawObjectsByType_(ObjectType type);
+
+        bool _drawAllObjects_() const {
+            for_each(m_field.objects.begin(),
+                     m_field.objects.end(), [](IObjectPtr objectPtr) {
+                        objectPtr->drawFigure();
+                    });
+            return true;
+        }
 
         /**
          *

@@ -16,11 +16,11 @@ namespace game {
 
 using std::for_each;
 
-Game::Game() : m_rocketFPS(100), m_obstaclesFPS(5) {
-//    initscr();
-//    noecho(); // Character is not printed if pressed
-//    nodelay(stdscr, TRUE);
-//    curs_set(0); // Makes cursor invisible
+Game::Game() : m_rocketFPS(2000), m_obstaclesFPS(5) {
+    initscr();
+    noecho(); // Character is not printed if pressed
+    nodelay(stdscr, TRUE);
+    curs_set(0); // Makes cursor invisible
 
     // Create obstacles from files.
     _loadObjects_("../resources/obstacles_list.txt");
@@ -30,14 +30,12 @@ Game::Game() : m_rocketFPS(100), m_obstaclesFPS(5) {
     m_ASCIIRocket = ObjectFactory::loadObject(rocketStream);
     IObjectPtr rocketPtr = ObjectFactory::createObject("rocket", m_ASCIIRocket);
     m_field.rocket = rocketPtr;
+    rocketPtr->drawFigure();
     rocketStream.close();
 
     // Create bullet from file.
     std::ifstream bulletStream("../resources/bullet", std::ios_base::in);
     m_ASCIIBullet = ObjectFactory::loadObject(bulletStream);
-    IObjectPtr bulletPtr = ObjectFactory::createObject("bullet", m_ASCIIBullet);
-    m_field.addObject(bulletPtr);
-
 
     _updateScreenSizes_();
 }
@@ -48,6 +46,8 @@ bool Game::startGame() {
 
     // Obviously ( rocketUpdateDelay << obstaclesUpdateDelay )
     unsigned counter{0};
+
+    std::cout << "\r" << rocketUpdateDelay << std::flush;
 
     while (usleep(rocketUpdateDelay) == 0 /* delay succeeded */ ) {
 //      1) Capture user's pressed button and then update rocket position.
@@ -63,35 +63,35 @@ bool Game::startGame() {
         if (_keyPressed_()) {
             int c = getch();
             switch (c) {
-                case KEY_UP: {
-                    _moveRocket_(Direction::up);
+                case KEYUP: {
+                    _moveDrawRocket_(Direction::up);
                     break;
                 }
-                case KEY_DOWN: {
-                    _moveRocket_(Direction::down);
+                case KEYDOWN: {
+                    _moveDrawRocket_(Direction::down);
                     break;
                 }
-                case KEY_FIRE: {
-                    _generateBullet_(m_field.rocket->getPos());
-                    break;
-                }
+//                case KEYFIRE: {
+//                    _generateBullet_(m_field.rocket->getPos());
+//                    break;
+//                }
                 default: {
                     break;
                 }
             }
         }
 
-        // Update bullets
-        _moveBullets_(1, Direction::right);
-        _drawObjectsByType_(eBullet);
-
-        // Update obstacles
-        _generateNewObstacles_();
-        _moveObstacles_(1, Direction::left);
-        _drawObjectsByType_(eObstacle);
+//        // Update bullets
+//        _moveBullets_(1, Direction::right);
+//
+//        // Update obstacles
+//        _generateNewObstacles_();
+//        _moveObstacles_(1, Direction::left);
+//
+//        _drawAllObjects_();
 
         std::cout << "\r" << counter++ << std::flush;
-        if (counter > 100) {
+        if (counter > 1000000) {
             break;
         }
     }
@@ -99,8 +99,7 @@ bool Game::startGame() {
 }
 
 Game::~Game() {
-//    getch();
-//    endwin();
+    endwin();
 }
 
 bool Game::_updateScreenSizes_() {
@@ -111,7 +110,7 @@ bool Game::_updateScreenSizes_() {
 unsigned Game::_moveObstacles_(unsigned int nSymbols, Direction direction) {
     unsigned counter{0};
     for_each(m_field.objects.begin(),
-             m_field.objects.end(), [=](IObjectPtr objectPtr) {
+             m_field.objects.end(), [&](IObjectPtr objectPtr) {
                 if (objectPtr->getType() == ObjectType::eObstacle) {
                     objectPtr->move(nSymbols, direction);
                     counter++;
@@ -123,7 +122,7 @@ unsigned Game::_moveObstacles_(unsigned int nSymbols, Direction direction) {
 unsigned Game::_moveBullets_(unsigned int nSymbols, Direction direction) {
     unsigned counter{0};
     for_each(m_field.objects.begin(),
-             m_field.objects.end(), [=](IObjectPtr objectPtr) {
+             m_field.objects.end(), [&](IObjectPtr objectPtr) {
                 if (objectPtr->getType() == ObjectType::eBullet) {
                     objectPtr->move(nSymbols, direction);
                     counter++;
@@ -221,16 +220,20 @@ bool Game::_keyPressed_(void) {
     }
 }
 
-bool Game::_moveRocket_(Direction direction) {
+bool Game::_moveDrawRocket_(Direction direction) {
+    m_field.rocket->eraseFigure();
     m_field.rocket->move(1, direction);
+    m_field.rocket->drawFigure();
     return true;
 }
 
 bool Game::_generateBullet_(const Point& position) {
-
+    IObjectPtr bulletPtr = ObjectFactory::createObject("bullet", m_ASCIIBullet);
+    m_field.addObject(bulletPtr);
+    return true;
 }
 
-    bool Game::GameField::addObject(IObjectPtr objectPtr) {
+bool Game::GameField::addObject(IObjectPtr objectPtr) {
     objects.insert(objects.begin(), objectPtr);
     return true;
 }
