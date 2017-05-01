@@ -280,24 +280,21 @@ namespace game {
     unsigned int Game::_removeOutOfScreenObjects_() {
         unsigned removedCount{0};
 
-        auto outOfBoundsRemover = [this, &removedCount](auto iter, auto end) {
+        auto outOfBoundsRemover = [this, &removedCount](auto& container) {
+            auto iter = container.begin(),
+                    end = container.end();
             for (; iter != end; ++iter) {
-                ShiftType x_coord = (*iter)->getPos().x;
-                if (x_coord > m_field.xMax || x_coord <= 0) {
-                    iter = m_field.obstacles.erase(iter);
+                IObjectPtr objectPtr = *iter;
+                if (_isOutOfBounds_(objectPtr)) {
+                    iter = container.erase(iter);
                     removedCount++;
                 }
             }
         };
 
         // Iterating over objects which exist in the m_field.
-        auto bulletIter = m_field.bullets.begin(),
-                bulletEnd = m_field.bullets.end();
-        auto obstacleIter = m_field.obstacles.begin(),
-                obstacleEnd = m_field.obstacles.end();
-
-        outOfBoundsRemover(bulletIter, bulletEnd);
-        outOfBoundsRemover(obstacleIter, obstacleEnd);
+        outOfBoundsRemover(this->m_field.obstacles);
+        outOfBoundsRemover(this->m_field.bullets);
 
         return removedCount;
     }
