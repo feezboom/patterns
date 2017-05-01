@@ -12,6 +12,13 @@
 
 namespace game {
 
+    enum ObjectType {
+        eObstacle,
+        eBullet,
+        eRocket,
+        eUndefined,
+    };
+
     class IObject {
     public:
 
@@ -51,11 +58,24 @@ namespace game {
 
         /**
          *
+         * @return
+         */
+        virtual ObjectType getType() const = 0;
+
+        /**
+         *
+         * @return
+         */
+        virtual bool setType(ObjectType) = 0;
+
+        /**
+         *
          */
         inline virtual ~IObject() {};
     };
 
     typedef std::shared_ptr<IObject> IObjectPtr;
+
 
 };
 

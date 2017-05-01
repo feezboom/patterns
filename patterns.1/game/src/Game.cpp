@@ -38,13 +38,13 @@ bool Game::startGame() {
 
         // Update rocket
 
-        // OnShotButtonPressed
+        // OnShotButtonPressed - bullets : create new & update old ones
 
         // Update obstacles
         _clearObjectsFromScreen_();
         _removeOutOfScreenObjects_();
-        _generateNewObjects_();
-        _moveObjects_();
+        _generateNewObstacles_();
+        _moveObstacles_();
         _drawObjectsOnScreen_();
     }
     return true;
@@ -59,35 +59,38 @@ bool Game::_updateScreenSizes_() {
     return true;
 }
 
-unsigned Game::_moveObjects_(unsigned int nSymbols, Direction direction) {
-    for_each(m_field.obstacles.begin(),
-             m_field.obstacles.end(), [=](IObjectPtr objectPtr) {
-                objectPtr->move(nSymbols, direction);
+unsigned Game::_moveObstacles_(unsigned int nSymbols, Direction direction) {
+    for_each(m_field.objects.begin(),
+             m_field.objects.end(), [=](IObjectPtr objectPtr) {
+                if (objectPtr->getType() == ObjectType::eObstacle) {
+                    objectPtr->move(nSymbols, direction);
+                }
             });
     return 0;
 }
 
-unsigned Game::_generateNewObjects_() {
-    /* initialize random seed: */
+unsigned Game::_generateNewObstacles_() {
+    // initialize random seed:
     srand(static_cast<unsigned>(time(0)));
 
     // Generate number of obstacles to generate.
-    unsigned objectsToGenerate = static_cast<unsigned>(rand()) % 3;
+    unsigned obstaclesToGenerate = static_cast<unsigned>(rand()) % 3;
 
-    for (unsigned i = 0; i < objectsToGenerate; ++i) {
+    for (unsigned i = 0; i < obstaclesToGenerate; ++i) {
         // Generate random object from storage
-        IObjectPtr generated = ObjectFactory::createRandom(m_existentObjects);
+        IObjectPtr generated = ObjectFactory::createRandom(m_ASCIIObstacles);
 
         // Generate random position for it.
         srand(static_cast<unsigned>(time(0)));
         unsigned yPos = rand() % m_field.yMax, xPos{0};
         generated->setPos(yPos, xPos);
+        generated->setType(ObjectType::eObstacle);
 
         // Add recently generated object on the field.
         m_field.addObject(generated);
     }
 
-    return objectsToGenerate;
+    return obstaclesToGenerate;
 }
 
 bool Game::_loadObjects_(std::istream &objectsList) {
@@ -113,7 +116,7 @@ bool Game::_loadObjects_(std::istream &objectsList) {
             currentObject.push_back(std::string(line));
         }
 
-        m_existentObjects.push_back(std::make_pair(fileName, currentObject));
+        m_ASCIIObstacles.push_back(std::make_pair(fileName, currentObject));
     }
 
 
@@ -121,8 +124,8 @@ bool Game::_loadObjects_(std::istream &objectsList) {
 }
 
 bool Game::_drawObjectsOnScreen_() {
-    for_each(m_field.obstacles.begin(),
-             m_field.obstacles.end(), [](IObjectPtr objectPtr) {
+    for_each(m_field.objects.begin(),
+             m_field.objects.end(), [](IObjectPtr objectPtr) {
                 objectPtr->eraseFigure();
             });
     return true;
@@ -132,12 +135,12 @@ unsigned int Game::_removeOutOfScreenObjects_() {
     unsigned removedCount{0};
 
     // Iterating over objects which exist in the m_field.
-    for (auto i = m_field.obstacles.begin();
-         i != m_field.obstacles.end(); ++i) {
+    for (auto i = m_field.objects.begin();
+         i != m_field.objects.end(); ++i) {
 
         // If object is out of bounds then erase it.
         if ((*i)->getPos().x > m_field.xMax) {
-            m_field.obstacles.erase(i++);
+            m_field.objects.erase(i++);
             removedCount++;
         }
     }
@@ -145,7 +148,7 @@ unsigned int Game::_removeOutOfScreenObjects_() {
 }
 
 bool Game::GameField::addObject(IObjectPtr objectPtr) {
-    obstacles.insert(obstacles.begin(), objectPtr);
+    objects.insert(objects.begin(), objectPtr);
     return true;
 }
 

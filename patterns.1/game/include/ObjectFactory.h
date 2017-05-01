@@ -33,7 +33,7 @@ namespace game {
          * @return IObjectPtr -
          *      Shared_ptr to just created object
          */
-        static IObjectPtr createRandom(ObjectsStorage &asciiReprs);
+        static IObjectPtr createRandom(ObjectsStorage &asciiObstacles);
 
     };
 

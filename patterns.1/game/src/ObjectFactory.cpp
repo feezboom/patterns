@@ -25,12 +25,12 @@ IObjectPtr ObjectFactory::createObject(const std::vector<std::string> &) {
     return IObjectPtr();
 }
 
-IObjectPtr ObjectFactory::createRandom(ObjectsStorage &asciiRepresentations) {
+IObjectPtr ObjectFactory::createRandom(ObjectsStorage &asciiObstacles) {
         srand(static_cast<unsigned>(time(0)));
-        unsigned chose = rand() % (unsigned) asciiRepresentations.size();
+        unsigned chose = rand() % (unsigned) asciiObstacles.size();
 
-        const ObjectName &chosenName = asciiRepresentations[chose].first;
-        const ObjectASCII &chosenObject = asciiRepresentations[chose].second;
+        const ObjectName &chosenName = asciiObstacles[chose].first;
+        const ObjectASCII &chosenObject = asciiObstacles[chose].second;
         IObjectPtr retVal = std::shared_ptr<Object>(new Object(chosenName, &chosenObject));
 
         return retVal;

@@ -16,6 +16,7 @@ namespace game {
 class Object : public IObject {
 public:
     Object(const ObjectName &name, const ObjectASCII *repr,
+           ObjectType type = ObjectType::eUndefined,
            ObjectShift y_pos = 0, ObjectShift x_pos = 0);
 
     /**
@@ -33,12 +34,17 @@ public:
 
     virtual bool setPos(unsigned y, unsigned x) override;
 
+    virtual ObjectType getType() const override;
+
+    virtual bool setType(ObjectType) override;
+
     virtual bool move(unsigned nSigns, Direction direction);
 
 protected:
     const std::string m_objectName;
     const ObjectASCII *m_signs;
     unsigned m_xShift, m_yShift;
+    ObjectType m_type;
 };
 
 }
