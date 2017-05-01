@@ -41,11 +41,11 @@ Game::Game() : m_rocketFPS(1500), m_obstaclesFPS(5) {
 }
 
 bool Game::startGame() {
-    unsigned rocketUpdateDelay = static_cast<unsigned>((10e6 / m_rocketFPS));
-    unsigned obstaclesUpdateDelay = static_cast<unsigned>((10e6 / m_obstaclesFPS));
+    ShiftType rocketUpdateDelay = static_cast<ShiftType>((10e6 / m_rocketFPS));
+    ShiftType obstaclesUpdateDelay = static_cast<ShiftType>((10e6 / m_obstaclesFPS));
 
     // Obviously ?? ( rocketUpdateDelay << obstaclesUpdateDelay )
-    unsigned counter{0};
+    ShiftType counter{0};
 
     std::cout << "\r" << rocketUpdateDelay << std::flush;
 
@@ -105,8 +105,8 @@ bool Game::_updateScreenSizes_() {
     return true;
 }
 
-unsigned Game::_moveObstacles_(unsigned int nSymbols, Direction direction) {
-    unsigned counter{0};
+ShiftType Game::_moveObstacles_(ShiftType nSymbols, Direction direction) {
+    ShiftType counter{0};
     for_each(m_field.objects.begin(),
              m_field.objects.end(), [&](IObjectPtr objectPtr) {
                 if (objectPtr->getType() == ObjectType::eObstacle) {
@@ -119,8 +119,8 @@ unsigned Game::_moveObstacles_(unsigned int nSymbols, Direction direction) {
 
     static int count{0};
 
-unsigned Game::_moveBullets_(unsigned int nSymbols, Direction direction) {
-    unsigned counter{0};
+ShiftType Game::_moveBullets_(ShiftType nSymbols, Direction direction) {
+    ShiftType counter{0};
     for_each(m_field.objects.begin(),
              m_field.objects.end(), [&](IObjectPtr objectPtr) {
                 if (objectPtr->getType() == ObjectType::eBullet) {
@@ -134,20 +134,20 @@ unsigned Game::_moveBullets_(unsigned int nSymbols, Direction direction) {
     return counter;
 }
 
-unsigned Game::_generateNewObstacles_(unsigned maxObjects) {
+ShiftType Game::_generateNewObstacles_(ShiftType maxObjects) {
     // initialize random seed:
-    srand(static_cast<unsigned>(time(0)));
+    srand(static_cast<ShiftType>(time(0)));
 
     // Generate number of obstacles to generate.
-    unsigned obstaclesToGenerate = static_cast<unsigned>(rand()) % maxObjects;
+    ShiftType obstaclesToGenerate = static_cast<ShiftType>(rand()) % maxObjects;
 
-    for (unsigned i = 0; i < obstaclesToGenerate; ++i) {
+    for (ShiftType i = 0; i < obstaclesToGenerate; ++i) {
         // Generate random object from storage
         IObjectPtr generated = ObjectFactory::createRandom(m_ASCIIObstacles);
 
         // Generate random position for it.
-        srand(static_cast<unsigned>(time(0)));
-        unsigned yPos = rand() % m_field.yMax, xPos{m_field.xMax};
+        srand(static_cast<ShiftType>(time(0)));
+        ShiftType yPos = rand() % m_field.yMax, xPos{m_field.xMax};
         generated->setPos(yPos, xPos);
         generated->setType(ObjectType::eObstacle);
 
@@ -195,15 +195,15 @@ bool Game::_drawObjectsByType_(ObjectType type) {
     return true;
 }
 
-unsigned int Game::_removeOutOfScreenObjects_() {
-    unsigned removedCount{0};
+ShiftType Game::_removeOutOfScreenObjects_() {
+    ShiftType removedCount{0};
 
     // Iterating over objects which exist in the m_field.
     for (auto i = m_field.objects.begin();
          i != m_field.objects.end(); ++i) {
 
         // If object is out of bounds then erase it.
-        unsigned x_coord = (*i)->getPos().x;
+        ShiftType x_coord = (*i)->getPos().x;
         if (x_coord > m_field.xMax || x_coord <= 0) {
             m_field.objects.erase(i++);
             removedCount++;

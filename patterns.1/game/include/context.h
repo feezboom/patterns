@@ -17,12 +17,12 @@ namespace game {
     #define KEYFIRE 32
 
     // Todo : replace all unsigned with such shit:
-    typedef unsigned ShiftType;
+    typedef int ShiftType;
 
     typedef std::vector<std::string> ObjectASCII;
     typedef std::string ObjectName;
     typedef std::vector<std::pair<ObjectName, ObjectASCII>> ObjectsStorage;
-    typedef unsigned ObjectShift;
+    typedef int ObjectShift;
 
 #include <ncurses.h>
 #define printstr(blo) \

@@ -60,9 +60,9 @@ namespace game {
 
         /**
          *
-         * @return unsigned - Number of new generated objects
+         * @return ShiftType - Number of new generated objects
          */
-        unsigned _generateNewObstacles_(unsigned maxObjects);
+        ShiftType _generateNewObstacles_(ShiftType maxObjects);
 
         /**
          *
@@ -70,10 +70,10 @@ namespace game {
          * @param direction
          * @return
          */
-        unsigned _moveObstacles_(unsigned nSymbols = 1,
+        ShiftType _moveObstacles_(ShiftType nSymbols = 1,
                                  Direction direction = left);
 
-        unsigned _moveBullets_(unsigned nSymbols = 1,
+        ShiftType _moveBullets_(ShiftType nSymbols = 1,
                                Direction direction = right);
 
         bool _moveRocket_(Direction direction);
@@ -110,7 +110,7 @@ namespace game {
          *
          * @return
          */
-        unsigned int _removeOutOfScreenObjects_();
+        ShiftType _removeOutOfScreenObjects_();
 
         /**
          *
@@ -126,7 +126,7 @@ namespace game {
         public:
             std::list<IObjectPtr> objects;
             IObjectPtr rocket;
-            unsigned xMax, yMax;
+            ShiftType xMax, yMax;
         };
 
         GameField m_field;

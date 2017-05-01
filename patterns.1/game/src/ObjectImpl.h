@@ -32,18 +32,18 @@ public:
 
     virtual game::Point getPos() override;
 
-    virtual bool setPos(unsigned y, unsigned x) override;
+    virtual bool setPos(ShiftType y, ShiftType x) override;
 
     virtual ObjectType getType() const override;
 
     virtual bool setType(ObjectType) override;
 
-    virtual bool move(unsigned nSigns, Direction direction);
+    virtual bool move(ShiftType nSigns, Direction direction);
 
 protected:
     const std::string m_objectName;
     const ObjectASCII *m_signs;
-    unsigned m_xShift, m_yShift;
+    ShiftType m_xShift, m_yShift;
     ObjectType m_type;
 };
 

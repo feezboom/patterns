@@ -33,7 +33,7 @@ namespace game {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-    bool Object::setPos(unsigned y, unsigned x) {
+    bool Object::setPos(ShiftType y, ShiftType x) {
         m_yShift = y;
         m_xShift = x;
         return true;
@@ -48,7 +48,7 @@ namespace game {
               m_yShift(y_pos),
               m_xShift(x_pos) {}
 
-    bool Object::move(unsigned nSigns, Direction direction) {
+    bool Object::move(ShiftType nSigns, Direction direction) {
         switch (direction) {
             case Direction::left: {
                 m_xShift -= nSigns;

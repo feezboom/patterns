@@ -9,6 +9,7 @@
 
 #include <Point.h>
 #include <Direction.h>
+#include "context.h"
 
 namespace game {
 
@@ -40,7 +41,7 @@ namespace game {
          * @param direction
          * @return
          */
-        virtual bool move(unsigned nSymbols, Direction direction) = 0;
+        virtual bool move(ShiftType nSymbols, Direction direction) = 0;
 
         /**
          *
@@ -54,7 +55,7 @@ namespace game {
          * @param x
          * @return
          */
-        virtual bool setPos(unsigned y, unsigned x) = 0;
+        virtual bool setPos(ShiftType y, ShiftType x) = 0;
 
         /**
          *
