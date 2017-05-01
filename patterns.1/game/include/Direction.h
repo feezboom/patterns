@@ -5,11 +5,13 @@
 #ifndef GAME_DIRECTION_H
 #define GAME_DIRECTION_H
 
-enum Direction {
-    left = -1,
-    noMove = 0,
-    right = 1,
-};
+namespace game {
 
+    enum Direction {
+        left = -1,
+        noMove = 0,
+        right = 1,
+    };
 
+}
 #endif //GAME_DIRECTION_H

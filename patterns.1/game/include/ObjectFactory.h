@@ -13,26 +13,30 @@
 #include <IObject.h>
 #include <context.h>
 
+namespace game {
 
-class ObjectFactory {
-public:
-    static IObjectPtr createObject(const std::istream&);
-    static IObjectPtr createObject(const std::string&);
-    static IObjectPtr createObject(const std::vector<std::string>&);
+    class ObjectFactory {
+    public:
+        static IObjectPtr createObject(const std::istream &);
 
-    /**
-     * @brief
-     *      Creates random object from given list of objects
-     * @param names -
-     *      Vector of existent objects
-     * @param asciiRepresentations -
-     *      Vector of ascii representations of objects (vector<vector<string>>)
-     * @return IObjectPtr -
-     *      Shared_ptr to just created object
-     */
-    static IObjectPtr createRandom(ObjectsStorage& asciiReprs);
+        static IObjectPtr createObject(const std::string &);
+
+        static IObjectPtr createObject(const std::vector<std::string> &);
+
+        /**
+         * @brief
+         *      Creates random object from given list of objects
+         * @param names -
+         *      Vector of existent objects
+         * @param asciiRepresentations -
+         *      Vector of ascii representations of objects (vector<vector<string>>)
+         * @return IObjectPtr -
+         *      Shared_ptr to just created object
+         */
+        static IObjectPtr createRandom(ObjectsStorage &asciiReprs);
+
+    };
 
 };
-
 
 #endif //GAME_OBJECTFACTORY_H

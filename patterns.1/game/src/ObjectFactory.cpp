@@ -8,6 +8,8 @@
 
 #include "ObjectImpl.h"
 
+namespace game {
+
 IObjectPtr ObjectFactory::createObject(const std::istream &) {
     // Todo : implement some shit here.
     return IObjectPtr();
@@ -24,12 +26,14 @@ IObjectPtr ObjectFactory::createObject(const std::vector<std::string> &) {
 }
 
 IObjectPtr ObjectFactory::createRandom(ObjectsStorage &asciiRepresentations) {
-    srand(static_cast<unsigned>(time(0)));
-    unsigned chose = rand() % (unsigned) asciiRepresentations.size();
+        srand(static_cast<unsigned>(time(0)));
+        unsigned chose = rand() % (unsigned) asciiRepresentations.size();
 
-    const ObjectName& chosenName = asciiRepresentations[chose].first;
-    const ObjectASCII& chosenObject = asciiRepresentations[chose].second;
-    IObjectPtr retVal = std::shared_ptr<Object>(new Object(chosenName, &chosenObject));
+        const ObjectName &chosenName = asciiRepresentations[chose].first;
+        const ObjectASCII &chosenObject = asciiRepresentations[chose].second;
+        IObjectPtr retVal = std::shared_ptr<Object>(new Object(chosenName, &chosenObject));
 
-    return retVal;
+        return retVal;
+    }
+
 }

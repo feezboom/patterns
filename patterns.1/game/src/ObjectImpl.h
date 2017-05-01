@@ -11,11 +11,13 @@
 #include <IObject.h>
 #include <context.h>
 
+namespace game {
 
 class Object : public IObject {
 public:
-    Object(const ObjectName& name, const ObjectASCII* repr,
+    Object(const ObjectName &name, const ObjectASCII *repr,
            ObjectShift y_pos = 0, ObjectShift x_pos = 0);
+
     /**
      * @brief
      *      Init Object from some source
@@ -24,14 +26,20 @@ public:
     inline virtual bool initObject() { return true; }
 
     virtual bool drawFigure() override;
+
     virtual bool eraseFigure() override;
+
+    virtual game::Point getPos() override;
+
     virtual bool setPos(unsigned y, unsigned x) override;
+
     virtual bool move(unsigned nSigns, Direction direction);
 
 protected:
     const std::string m_objectName;
-    const ObjectASCII* m_signs;
+    const ObjectASCII *m_signs;
     unsigned m_xShift, m_yShift;
 };
 
+}
 #endif //GAME_OBJECTIMPL_H
