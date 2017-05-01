@@ -41,8 +41,8 @@ Game::Game() : m_rocketFPS(1500), m_obstaclesFPS(5) {
 }
 
 bool Game::startGame() {
-    ShiftType rocketUpdateDelay = static_cast<ShiftType>((10e6 / m_rocketFPS));
-    ShiftType obstaclesUpdateDelay = static_cast<ShiftType>((10e6 / m_obstaclesFPS));
+    unsigned rocketUpdateDelay = static_cast<unsigned>((10e6 / m_rocketFPS));
+    unsigned obstaclesUpdateDelay = static_cast<unsigned>((10e6 / m_obstaclesFPS));
 
     // Obviously ?? ( rocketUpdateDelay << obstaclesUpdateDelay )
     ShiftType counter{0};
@@ -75,6 +75,11 @@ bool Game::startGame() {
                     _generateBullet_(m_field.rocket->getPos());
                     break;
                 }
+                case KEYPAUSE: {
+                    nodelay(stdscr, FALSE);
+                    while (getch() != KEYCONTINUE);
+                    nodelay(stdscr, TRUE);
+                }
                 default: {
                     break;
                 }
@@ -85,7 +90,7 @@ bool Game::startGame() {
         _moveBullets_(1, Direction::right);
 
         // Update obstacles
-        _generateNewObstacles_(1);
+        _generateNewObstacles_(2);
         _moveObstacles_(1, Direction::left);
 
         _drawAllObjects_();
@@ -136,7 +141,7 @@ ShiftType Game::_moveBullets_(ShiftType nSymbols, Direction direction) {
 
 ShiftType Game::_generateNewObstacles_(ShiftType maxObjects) {
     // initialize random seed:
-    srand(static_cast<ShiftType>(time(0)));
+    srand(static_cast<unsigned>(time(0)));
 
     // Generate number of obstacles to generate.
     ShiftType obstaclesToGenerate = static_cast<ShiftType>(rand()) % maxObjects;
@@ -146,7 +151,7 @@ ShiftType Game::_generateNewObstacles_(ShiftType maxObjects) {
         IObjectPtr generated = ObjectFactory::createRandom(m_ASCIIObstacles);
 
         // Generate random position for it.
-        srand(static_cast<ShiftType>(time(0)));
+        srand(static_cast<unsigned>(time(0)));
         ShiftType yPos = rand() % m_field.yMax, xPos{m_field.xMax};
         generated->setPos(yPos, xPos);
         generated->setType(ObjectType::eObstacle);
