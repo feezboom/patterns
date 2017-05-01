@@ -159,9 +159,9 @@ namespace game {
             _generateUpdateObstacles_(generateNew, moveOldOnes, 2);
 
             _drawAllObjects_();
-            m_field.rocket->drawFigure();
 
             printstrnumxy(m_field.yMax - 1, 0, "Iteration: ", counter++)
+            printstrnumxy(m_field.yMax - 1, 20, "Bullets count : ", m_field.bullets.size())
             printstrnumxy(m_field.yMax - 1, 120, "Obstacles count : ", m_field.obstacles.size())
         }
         return true;
@@ -199,6 +199,9 @@ namespace game {
         for (; bulletIter != bulletEnd; ++bulletIter) {
             IObjectPtr bullet = *bulletIter;
             bullet->move(nSymbols, direction);
+//            while (_isOutOfBounds_(bullet)) {
+//                bulletIter = m_field.bullets.erase(bulletIter);
+//            }
             assert(bullet->getType() == ObjectType::eBullet);
 
             for (; obstacleIter != obstacleEnd; ++obstacleIter) {
@@ -367,13 +370,18 @@ namespace game {
 
     }
 
+    bool Game::_isOutOfBounds_(IObjectPtr obj) {
+        ShiftType x_coord = obj->getPos().x;
+        return x_coord > m_field.xMax || x_coord <= 0;
+    }
+
     bool Game::GameField::addObstacle(IObjectPtr iObstaclePtr) {
-        obstacles.push_front(iObstaclePtr);
+        obstacles.push_back(iObstaclePtr);
         return true;
     }
 
     bool Game::GameField::addBullet(IObjectPtr iBulletPtr) {
-        bullets.push_front(iBulletPtr);
+        bullets.push_back(iBulletPtr);
         return true;
     }
 

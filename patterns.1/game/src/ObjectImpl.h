@@ -19,13 +19,6 @@ public:
            ObjectType type = ObjectType::eUndefined,
            ObjectShift y_pos = 0, ObjectShift x_pos = 0);
 
-    /**
-     * @brief
-     *      Init Object from some source
-     * @return
-     */
-    inline virtual bool initObject() { return true; }
-
     virtual bool drawFigure() override;
 
     virtual bool eraseFigure() override;

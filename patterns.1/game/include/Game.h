@@ -123,6 +123,8 @@ namespace game {
 
         bool _isCollision_(IObjectPtr obj1, IObjectPtr obj2);
 
+        bool _isOutOfBounds_(IObjectPtr);
+
         /**
          *
          * @return
