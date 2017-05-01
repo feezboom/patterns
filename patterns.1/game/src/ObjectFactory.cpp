@@ -26,6 +26,10 @@ IObjectPtr ObjectFactory::createObject(const std::vector<std::string> &) {
 }
 
 IObjectPtr ObjectFactory::createRandom(ObjectsStorage &asciiObstacles) {
+
+        printstry(1, "HEllo, world");
+        printnumy(2, asciiObstacles.size())
+
         srand(static_cast<unsigned>(time(0)));
         unsigned chose = rand() % (unsigned) asciiObstacles.size();
 

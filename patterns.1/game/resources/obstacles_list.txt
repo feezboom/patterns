@@ -1,0 +1,3 @@
+../resources/apple
+../resources/eaten_apple
+../resources/kettle

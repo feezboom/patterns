@@ -44,18 +44,20 @@ namespace game {
          */
         bool _updateScreenSizes_();
 
+        ObjectASCII _loadObject_(std::istream &objectStream) const;
+
         /**
          * @brief
          *      Loads list of objects from objectList
          *      inside itself.
-         * @param objectsList
+         * @param file
          *      Istream, which contains names of files with
          *      ASCII objects representations.
          *
          * @return
          *      True on success.
          */
-        bool _loadObjects_(std::istream &objectsList);
+        bool _loadObjects_(const std::string &file);
 
         /**
          *
@@ -86,7 +88,7 @@ namespace game {
          *
          * @return
          */
-        bool _drawObjectsOnScreen_();
+        bool _drawObjectsByType_(ObjectType type);
 
         /**
          *

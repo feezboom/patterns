@@ -24,7 +24,22 @@ namespace game {
     typedef std::vector<std::pair<ObjectName, ObjectASCII>> ObjectsStorage;
     typedef unsigned ObjectShift;
 
+#include <ncurses.h>
+#define printstr(blo) \
+    mvprintw(0,0,blo); \
+    refresh(); \
 
+#define printnum(blo) \
+    mvprintw(0,0,std::to_string(blo).c_str()); \
+    refresh(); \
+
+#define printstry(y, blo) \
+    mvprintw(y, 0, blo); \
+    refresh(); \
+
+#define printnumy(y, blo) \
+    mvprintw(y,0,std::to_string(blo).c_str()); \
+    refresh(); \
 
 }
 
