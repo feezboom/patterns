@@ -16,12 +16,15 @@ namespace game {
     #define KEYDOWN 66
     #define KEYRIGHT 67
     #define KEYLEFT 68
+
     #define KEYFIRE ' '
     #define KEYPAUSE 'p'
     #define KEYCONTINUE 'c'
     #define KEYDEBUG 'd'
 
-    // Todo : replace all unsigned with such shit:
+#define DEFAULT_ROCKET_FPS 1000
+#define DEFAULT_OBST_FPS DEFAULT_ROCKET_FPS/10
+
     typedef int ShiftType;
 
     typedef std::vector<std::string> ObjectASCII;

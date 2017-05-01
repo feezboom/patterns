@@ -13,7 +13,6 @@
 
 #include <IObject.h>
 #include <context.h>
-#include <unordered_set>
 
 namespace game {
 
@@ -71,8 +70,8 @@ namespace game {
          * @param direction
          * @return
          */
-        ShiftType _moveObstacles_(ShiftType nSymbols = 1,
-                                 Direction direction = left);
+        unsigned int _moveObstacles_(ShiftType nSymbols = 1,
+                                     Direction direction = left);
 
         ShiftType _moveBullets_(ShiftType nSymbols = 1,
                                Direction direction = right);
@@ -116,6 +115,8 @@ namespace game {
          * @return
          */
         unsigned int _removeOutOfScreenObjects_();
+
+        unsigned _generateUpdateObstacles_(bool generate, bool move, unsigned maxToGen);
 
         /**
          *

@@ -17,7 +17,7 @@ namespace game {
 
 using std::for_each;
 
-Game::Game() : m_rocketFPS(1500), m_obstaclesFPS(5) {
+Game::Game() : m_rocketFPS(1500), m_obstaclesFPS(500) {
     initscr();
     noecho(); // Character is not printed if pressed
     nodelay(stdscr, TRUE);
@@ -29,11 +29,10 @@ Game::Game() : m_rocketFPS(1500), m_obstaclesFPS(5) {
     _loadObjects_("../resources/obstacles_list.txt");
 
     // Create rocket from file.
-    std::ifstream rocketStream("../resources/kettle", std::ios_base::in);
+    std::ifstream rocketStream("../resources/rocket", std::ios_base::in);
     m_ASCIIRocket = ObjectFactory::loadObject(rocketStream);
     IObjectPtr rocketPtr = ObjectFactory::createObject("rocket", m_ASCIIRocket);
     m_field.rocket = rocketPtr;
-    rocketPtr->drawFigure();
     rocketStream.close();
 
     // Create bullet from file.
@@ -48,7 +47,7 @@ bool Game::startGame() {
     unsigned obstaclesUpdateDelay = static_cast<unsigned>((10e6 / m_obstaclesFPS));
 
     // Obviously ?? ( rocketUpdateDelay << obstaclesUpdateDelay )
-    ShiftType counter{0};
+    unsigned long counter{0};
 
 //    std::cout << "\r" << rocketUpdateDelay << std::flush;
 
@@ -157,15 +156,15 @@ bool Game::startGame() {
         // Update bullets
         _moveBullets_(1, Direction::right);
 
-        // Update obstacles
-        _generateNewObstacles_(2);
-        _moveObstacles_(1, Direction::left);
+        bool generateNew = (counter % (m_rocketFPS*10 / m_obstaclesFPS) == 0);
+        bool moveOldOnes = (counter % (m_rocketFPS / m_obstaclesFPS) == 0);
+        _generateUpdateObstacles_(generateNew, moveOldOnes, 2);
 
         _drawAllObjects_();
         m_field.rocket->drawFigure();
 
         printstrnumxy(m_field.yMax-1, 0, "Iteration: ", counter++)
-        printstrnumxy(m_field.yMax-1, 120, "obst count : ", m_field.objects.size())
+        printstrnumxy(m_field.yMax-1, 120, "Obstacles count : ", m_field.objects.size())
     }
     return true;
 }
@@ -179,8 +178,8 @@ bool Game::_updateScreenSizes_() {
     return true;
 }
 
-ShiftType Game::_moveObstacles_(ShiftType nSymbols, Direction direction) {
-    ShiftType counter{0};
+unsigned int Game::_moveObstacles_(ShiftType nSymbols, Direction direction) {
+    unsigned counter{0};
     for_each(m_field.objects.begin(),
              m_field.objects.end(), [&](IObjectPtr objectPtr) {
                 if (objectPtr->getType() == ObjectType::eObstacle) {
@@ -302,7 +301,7 @@ bool Game::_moveRocket_(Direction direction) {
     static int anotherCounter{0};
 
 bool Game::_generateBullet_(const Point& position) {
-    printstrnumxy(m_field.yMax-1, 80, "I'm in generate bullet!! ", anotherCounter++);
+    printstrnumxy(m_field.yMax-1, 80, "I'm in generated bullet #", anotherCounter++);
     IObjectPtr bulletPtr = ObjectFactory::createObject("bullet", m_ASCIIBullet);
     Point pos = m_field.rocket->getPos();
     bulletPtr->setPos(pos.y + 2, pos.x + 1);
@@ -312,7 +311,18 @@ bool Game::_generateBullet_(const Point& position) {
     return true;
 }
 
-bool Game::GameField::addObject(IObjectPtr objectPtr) {
+unsigned Game::_generateUpdateObstacles_(bool generate, bool move, unsigned maxToGen) {
+    // Update obstacles
+    if (generate) {
+        _generateNewObstacles_(maxToGen);
+    }
+    if (move) {
+        return _moveObstacles_(1, Direction::left);
+    }
+    return 0;
+}
+
+    bool Game::GameField::addObject(IObjectPtr objectPtr) {
     objects.push_front(objectPtr);
     return true;
 }
