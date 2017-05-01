@@ -9,6 +9,7 @@
 #include <vector>
 #include <unordered_map>
 #include <map>
+#include <memory>
 
 namespace game {
 
@@ -31,6 +32,13 @@ namespace game {
     typedef std::string ObjectName;
     typedef std::vector<std::pair<ObjectName, ObjectASCII>> ObjectsStorage;
     typedef int ObjectShift;
+
+    class IObject;
+    class Object;
+
+    typedef std::shared_ptr<IObject> IObjectPtr;
+    typedef std::shared_ptr<Object> ObjectPtr;
+
 
 #include <ncurses.h>
 #define printstr(blo) \

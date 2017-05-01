@@ -85,66 +85,66 @@ bool Game::startGame() {
                     _generateBullet_(m_field.rocket->getPos());
                     break;
                 }
-                case KEYPAUSE: {
-                    nodelay(stdscr, FALSE);
-                    while (getch() != KEYCONTINUE);
-                    nodelay(stdscr, TRUE);
-                }
-                case KEYDEBUG: {
-                    nodelay(stdscr, FALSE);
-                    while ((c=getch()) != KEYDEBUG) {
-                        m_field.rocket->eraseFigure();
-
-                        if (c == KEYRIGHT) {
-                            m_field.rocket->move(1, right);
-                        } else if (c == KEYLEFT) {
-                            m_field.rocket->move(1, left);
-                        } else if (c == KEYUP) {
-                            m_field.rocket->move(1, up);
-                        } else if (c == KEYDOWN) {
-                            m_field.rocket->move(1, down);
-                        }
-
-                        if (c == 'q') {
-                            _drawAllObjects_();
-                            c = getch();
-                            if (c == 'w') {
-                                int x = m_field.xMax/2;
-                                int y = m_field.yMax/2;
-                                auto& p = m_field.objects.begin().operator*();
-                                std::shared_ptr<Object> pp = std::dynamic_pointer_cast<Object>(p);
-                                std::vector<std::string> q = *pp->m_signs;
-                                for (int i = 0; i < q.size(); ++i) {
-                                    mvprintw(y+i,x, q[i].c_str());
-                                }
-                            }
-                        }
-                        if (c == 'Q') {
-                            _clearObjectsFromScreen_();
-                        }
-
-
-                        if (c == 'o') {
-                            const IObjectPtr& o = m_field.objects.begin().operator*();
-                            while ((c=getch()) != 'o') {
-                                o->eraseFigure();
-                                if (c == KEYRIGHT) {
-                                    o->move(1, right);
-                                } else if (c == KEYLEFT) {
-                                    o->move(1, left);
-                                } else if (c == KEYUP) {
-                                    o->move(1, up);
-                                } else if (c == KEYDOWN) {
-                                    o->move(1, down);
-                                }
-                                o->drawFigure();
-                            }
-                        }
-                        m_field.rocket->drawFigure();
-
-                    }
-                    nodelay(stdscr, TRUE);
-                }
+//                case KEYPAUSE: {
+//                    nodelay(stdscr, FALSE);
+//                    while (getch() != KEYCONTINUE);
+//                    nodelay(stdscr, TRUE);
+//                }
+//                case KEYDEBUG: {
+//                    nodelay(stdscr, FALSE);
+//                    while ((c=getch()) != KEYDEBUG) {
+//                        m_field.rocket->eraseFigure();
+//
+//                        if (c == KEYRIGHT) {
+//                            m_field.rocket->move(1, right);
+//                        } else if (c == KEYLEFT) {
+//                            m_field.rocket->move(1, left);
+//                        } else if (c == KEYUP) {
+//                            m_field.rocket->move(1, up);
+//                        } else if (c == KEYDOWN) {
+//                            m_field.rocket->move(1, down);
+//                        }
+//
+//                        if (c == 'q') {
+//                            _drawAllObjects_();
+//                            c = getch();
+//                            if (c == 'w') {
+//                                int x = m_field.xMax/2;
+//                                int y = m_field.yMax/2;
+//                                auto& p = m_field.objects.begin().operator*();
+//                                std::shared_ptr<Object> pp = std::dynamic_pointer_cast<Object>(p);
+//                                std::vector<std::string> q = *pp->m_signs;
+//                                for (int i = 0; i < q.size(); ++i) {
+//                                    mvprintw(y+i,x, q[i].c_str());
+//                                }
+//                            }
+//                        }
+//                        if (c == 'Q') {
+//                            _clearObjectsFromScreen_();
+//                        }
+//
+//
+//                        if (c == 'o') {
+//                            const IObjectPtr& o = m_field.objects.begin().operator*();
+//                            while ((c=getch()) != 'o') {
+//                                o->eraseFigure();
+//                                if (c == KEYRIGHT) {
+//                                    o->move(1, right);
+//                                } else if (c == KEYLEFT) {
+//                                    o->move(1, left);
+//                                } else if (c == KEYUP) {
+//                                    o->move(1, up);
+//                                } else if (c == KEYDOWN) {
+//                                    o->move(1, down);
+//                                }
+//                                o->drawFigure();
+//                            }
+//                        }
+//                        m_field.rocket->drawFigure();
+//
+//                    }
+//                    nodelay(stdscr, TRUE);
+//                }
                 default: {
                     break;
                 }
@@ -155,6 +155,8 @@ bool Game::startGame() {
 
         // Update bullets
         _moveBullets_(1, Direction::right);
+
+        _removeObjectsCollidedByBullets_();
 
         bool generateNew = (counter % (m_rocketFPS*10 / m_obstaclesFPS) == 0);
         bool moveOldOnes = (counter % (m_rocketFPS / m_obstaclesFPS) == 0);
@@ -190,10 +192,11 @@ unsigned int Game::_moveObstacles_(ShiftType nSymbols, Direction direction) {
     return counter;
 }
 
-    static int count{0};
+    // TODO : remove after debug
+static int count{0};
 
 ShiftType Game::_moveBullets_(ShiftType nSymbols, Direction direction) {
-    ShiftType counter{0};
+    unsigned counter{0};
     for_each(m_field.objects.begin(),
              m_field.objects.end(), [&](IObjectPtr objectPtr) {
                 if (objectPtr->getType() == ObjectType::eBullet) {
@@ -202,7 +205,7 @@ ShiftType Game::_moveBullets_(ShiftType nSymbols, Direction direction) {
                     count++;
                 }
             });
-    printstrnumxy(m_field.yMax-1, 50, "moved bullets : ", count);
+//    printstrnumxy(m_field.yMax-1, 50, "moved bullets : ", count);
 
     return counter;
 }
@@ -298,7 +301,8 @@ bool Game::_moveRocket_(Direction direction) {
     return true;
 }
 
-    static int anotherCounter{0};
+    // TODO :remove after debug
+static int anotherCounter{0};
 
 bool Game::_generateBullet_(const Point& position) {
     printstrnumxy(m_field.yMax-1, 80, "I'm in generated bullet #", anotherCounter++);
@@ -321,6 +325,59 @@ unsigned Game::_generateUpdateObstacles_(bool generate, bool move, unsigned maxT
     }
     return 0;
 }
+
+bool Game::_removeObjectsCollidedByBullets_() {
+    std::vector<IObjectPtr> bullets;
+    for (const auto& iObj : m_field.objects) {
+        if (iObj->getType() == ObjectType::eBullet) {
+            bullets.push_back(iObj);
+        }
+    };
+
+    for (const auto& iBullet : bullets) {
+        auto it = m_field.objects.begin();
+        auto end = m_field.objects.end();
+        for (; it != end; ++it) {
+            if ((*it)->getType() == ObjectType::eObstacle
+                    && _checkCollision_(iBullet, (*it))) {
+                m_field.objects.erase(it);
+                m_field
+//                it = m_field.objects.begin();
+//                end = m_field.objects.end(); // if bullet indestructible
+            }
+        }
+    }
+    return false;
+}
+
+    bool Game::_checkCollision_(IObjectPtr obj1, IObjectPtr obj2) {
+        const ObjectASCII *repr1 = obj1->getASCIIRepresentation(),
+                            *repr2 = obj2->getASCIIRepresentation();
+        const Point pos1 = obj1->getPos(),
+                     pos2 = obj2->getPos();
+
+        if (pos1.y + repr1->size() < pos2.y ||
+                pos2.y + repr2->size() < pos1.y) {
+            return false;
+        }
+
+        auto getLength = [](const ObjectASCII* o) {
+            unsigned long max{0};
+            for (const auto& line : *o) {
+                if (line.size() > max) {
+                    max = line.size();
+                }
+            }
+            return max;
+        };
+
+        if (pos1.x + getLength(repr1) < pos2.x ||
+                pos2.x + getLength(repr2) < pos1.x) {
+            return false;
+        }
+
+        return true;
+    }
 
     bool Game::GameField::addObject(IObjectPtr objectPtr) {
     objects.push_front(objectPtr);

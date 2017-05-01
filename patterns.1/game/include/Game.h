@@ -122,6 +122,15 @@ namespace game {
          *
          * @return
          */
+        bool _removeObjectsCollidedByBullets_();
+
+
+        bool _checkCollision_(IObjectPtr obj1, IObjectPtr obj2);
+
+        /**
+         *
+         * @return
+         */
         static bool _keyPressed_(void);
 
     private:

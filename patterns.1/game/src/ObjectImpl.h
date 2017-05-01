@@ -40,6 +40,8 @@ public:
 
     virtual bool move(ShiftType nSigns, Direction direction);
 
+    virtual const ObjectASCII* getASCIIRepresentation() override;
+
 //protected:
     public:
 

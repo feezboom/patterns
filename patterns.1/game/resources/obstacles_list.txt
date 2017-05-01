@@ -1,3 +1,5 @@
 ../resources/apple
 ../resources/eaten_apple
 ../resources/kettle
+../resources/m&m
+../resources/glass

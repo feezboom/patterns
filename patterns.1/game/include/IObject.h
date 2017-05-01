@@ -69,13 +69,14 @@ namespace game {
          */
         virtual bool setType(ObjectType) = 0;
 
+        virtual const ObjectASCII* getASCIIRepresentation() = 0;
+
         /**
          *
          */
         inline virtual ~IObject() {};
     };
 
-    typedef std::shared_ptr<IObject> IObjectPtr;
 
 
 };
