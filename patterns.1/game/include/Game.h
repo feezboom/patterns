@@ -124,6 +124,16 @@ namespace game {
 
         void _printCurrentScore_();
 
+        bool _checkLoose_() {
+            if (loose) {
+                mvprintw(m_field.yMax/2, m_field.xMax/2, "YOU LOSE");
+                nodelay(stdscr, FALSE);
+                while (getch() != 'q');
+                return true;
+            }
+            return false;
+        }
+
     private:
         class GameField {
         public:

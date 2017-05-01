@@ -3,3 +3,7 @@
 ../resources/kettle
 ../resources/m&m
 ../resources/glass
+../resources/beer
+../resources/big_icecream
+../resources/pizza
+../resources/cheese

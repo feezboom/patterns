@@ -17,7 +17,7 @@ namespace game {
 
     using std::for_each;
 
-    Game::Game() : m_rocketFPS(500), m_obstaclesFPS(500),
+    Game::Game() : m_rocketFPS(1000), m_obstaclesFPS(500),
                    m_currentScore{0}, loose(false) {
         initscr();
         noecho(); // Character is not printed if pressed
@@ -167,10 +167,7 @@ namespace game {
 
             _printCurrentScore_();
 
-            if (loose) {
-                mvprintw(m_field.yMax/2, m_field.xMax/2, "YOU LOSE");
-                nodelay(stdscr, FALSE);
-                while (getch() != 'q');
+            if (_checkLoose_()) {
                 return true;
             }
 
