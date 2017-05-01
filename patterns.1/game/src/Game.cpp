@@ -58,7 +58,7 @@ bool Game::startGame() {
 //      3) Move all obstacles.
 //      4) Update newly generated obstacles on the screen.
 
-        _clearObjectsFromScreen_();
+        _clearAllObjectsFromScreen_();
         _removeOutOfScreenObjects_();
 
         // OnUserPressedButton.
@@ -151,7 +151,7 @@ bool Game::startGame() {
             }
         }
 
-        _clearObjectsFromScreen_();
+        _clearAllObjectsFromScreen_();
 
         // Update bullets
         _moveBullets_(1, Direction::right);
@@ -166,7 +166,7 @@ bool Game::startGame() {
         m_field.rocket->drawFigure();
 
         printstrnumxy(m_field.yMax-1, 0, "Iteration: ", counter++)
-        printstrnumxy(m_field.yMax-1, 120, "Obstacles count : ", m_field.objects.size())
+        printstrnumxy(m_field.yMax-1, 120, "Obstacles count : ", m_field.obstacles.size())
     }
     return true;
 }
@@ -182,13 +182,11 @@ bool Game::_updateScreenSizes_() {
 
 unsigned int Game::_moveObstacles_(ShiftType nSymbols, Direction direction) {
     unsigned counter{0};
-    for_each(m_field.objects.begin(),
-             m_field.objects.end(), [&](IObjectPtr objectPtr) {
-                if (objectPtr->getType() == ObjectType::eObstacle) {
-                    objectPtr->move(nSymbols, direction);
-                    counter++;
-                }
-            });
+    for (auto& iObstaclePtr : m_field.obstacles) {
+        assert(iObstaclePtr->getType() == ObjectType::eObstacle);
+        iObstaclePtr->move(nSymbols, direction);
+        counter++;
+    };
     return counter;
 }
 
@@ -197,14 +195,11 @@ static int count{0};
 
 ShiftType Game::_moveBullets_(ShiftType nSymbols, Direction direction) {
     unsigned counter{0};
-    for_each(m_field.objects.begin(),
-             m_field.objects.end(), [&](IObjectPtr objectPtr) {
-                if (objectPtr->getType() == ObjectType::eBullet) {
-                    objectPtr->move(nSymbols, direction);
-                    counter++;
-                    count++;
-                }
-            });
+    for (auto& iBulletPtr : m_field.bullets) {
+        assert(iBulletPtr->getType() == ObjectType::eBullet);
+        iBulletPtr->move(nSymbols, direction);
+        counter++; count++;
+    }
 //    printstrnumxy(m_field.yMax-1, 50, "moved bullets : ", count);
 
     return counter;
@@ -224,7 +219,7 @@ ShiftType Game::_generateNewObstacles_(ShiftType maxObjects) {
         generated->setType(ObjectType::eObstacle);
 
         // Add recently generated object on the field.
-        m_field.addObject(generated);
+        m_field.addObstacle(generated);
     }
 
     return obstaclesToGenerate;
@@ -258,8 +253,8 @@ bool Game::_loadObjects_(const std::string &file) {
 }
 
 bool Game::_drawObjectsByType_(ObjectType type) {
-    for_each(m_field.objects.begin(),
-             m_field.objects.end(), [=](IObjectPtr objectPtr) {
+    for_each(m_field.obstacles.begin(),
+             m_field.obstacles.end(), [=](IObjectPtr objectPtr) {
                 if (objectPtr->getType() == type) {
                     objectPtr->drawFigure();
                 }
@@ -270,18 +265,25 @@ bool Game::_drawObjectsByType_(ObjectType type) {
 unsigned int Game::_removeOutOfScreenObjects_() {
     unsigned removedCount{0};
 
-    // Iterating over objects which exist in the m_field.
-    for (auto i = m_field.objects.begin();
-         i != m_field.objects.end(); ++i) {
-
-        // If object is out of bounds then erase it.
-        ShiftType x_coord = (*i)->getPos().x;
-        if (x_coord > m_field.xMax || x_coord <= 0) {
-            m_field.objects.erase(i);
-            i = m_field.objects.begin();
-            removedCount++;
+    auto outOfBoundsRemover = [this, &removedCount](auto iter, auto end) {
+        for (; iter != end; ++iter) {
+            ShiftType x_coord = (*iter)->getPos().x;
+            if (x_coord > m_field.xMax || x_coord <= 0) {
+                iter = m_field.obstacles.erase(iter);
+                removedCount++;
+            }
         }
-    }
+    };
+
+    // Iterating over objects which exist in the m_field.
+    auto bulletIter = m_field.bullets.begin(),
+            bulletEnd = m_field.bullets.end();
+    auto obstacleIter = m_field.obstacles.begin(),
+            obstacleEnd = m_field.obstacles.end();
+
+    outOfBoundsRemover(bulletIter, bulletEnd);
+    outOfBoundsRemover(obstacleIter, obstacleEnd);
+
     return removedCount;
 }
 
@@ -307,11 +309,12 @@ static int anotherCounter{0};
 bool Game::_generateBullet_(const Point& position) {
     printstrnumxy(m_field.yMax-1, 80, "I'm in generated bullet #", anotherCounter++);
     IObjectPtr bulletPtr = ObjectFactory::createObject("bullet", m_ASCIIBullet);
+
     Point pos = m_field.rocket->getPos();
     bulletPtr->setPos(pos.y + 2, pos.x + 1);
     bulletPtr->setType(ObjectType::eBullet);
 
-    m_field.addObject(bulletPtr);
+    m_field.addBullet(bulletPtr);
     return true;
 }
 
@@ -327,30 +330,29 @@ unsigned Game::_generateUpdateObstacles_(bool generate, bool move, unsigned maxT
 }
 
 bool Game::_removeObjectsCollidedByBullets_() {
-    std::vector<IObjectPtr> bullets;
-    for (const auto& iObj : m_field.objects) {
-        if (iObj->getType() == ObjectType::eBullet) {
-            bullets.push_back(iObj);
-        }
-    };
+    auto bulletIter = m_field.bullets.begin(),
+            bulletEnd = m_field.bullets.end();
+    auto obstacleIter = m_field.obstacles.begin(),
+            obstacleEnd = m_field.obstacles.end();
 
-    for (const auto& iBullet : bullets) {
-        auto it = m_field.objects.begin();
-        auto end = m_field.objects.end();
-        for (; it != end; ++it) {
-            if ((*it)->getType() == ObjectType::eObstacle
-                    && _checkCollision_(iBullet, (*it))) {
-                m_field.objects.erase(it);
-                m_field
-//                it = m_field.objects.begin();
-//                end = m_field.objects.end(); // if bullet indestructible
+    for (; bulletIter != bulletEnd; ++bulletIter) {
+        IObjectPtr bullet = *bulletIter;
+        assert(bullet->getType() == ObjectType::eBullet);
+
+        for (; obstacleIter != obstacleEnd; ++obstacleIter) {
+            IObjectPtr obstacle = *obstacleIter;
+            assert(obstacle->getType() == ObjectType::eObstacle);
+
+            if (_isCollision_(bullet, obstacle)) {
+                obstacleIter = m_field.obstacles.erase(obstacleIter);
+                bulletIter = m_field.bullets.erase(bulletIter);
             }
         }
     }
     return false;
 }
 
-    bool Game::_checkCollision_(IObjectPtr obj1, IObjectPtr obj2) {
+    bool Game::_isCollision_(IObjectPtr obj1, IObjectPtr obj2) {
         const ObjectASCII *repr1 = obj1->getASCIIRepresentation(),
                             *repr2 = obj2->getASCIIRepresentation();
         const Point pos1 = obj1->getPos(),
@@ -361,7 +363,7 @@ bool Game::_removeObjectsCollidedByBullets_() {
             return false;
         }
 
-        auto getLength = [](const ObjectASCII* o) {
+        auto getObjectXLength = [](const ObjectASCII* o) {
             unsigned long max{0};
             for (const auto& line : *o) {
                 if (line.size() > max) {
@@ -371,17 +373,19 @@ bool Game::_removeObjectsCollidedByBullets_() {
             return max;
         };
 
-        if (pos1.x + getLength(repr1) < pos2.x ||
-                pos2.x + getLength(repr2) < pos1.x) {
-            return false;
-        }
+        return !(pos1.x + getObjectXLength(repr1) < pos2.x ||
+            pos2.x + getObjectXLength(repr2) < pos1.x);
 
-        return true;
     }
 
-    bool Game::GameField::addObject(IObjectPtr objectPtr) {
-    objects.push_front(objectPtr);
+    bool Game::GameField::addObstacle(IObjectPtr iObstaclePtr) {
+    obstacles.push_front(iObstaclePtr);
     return true;
 }
+
+    bool Game::GameField::addBullet(IObjectPtr iBulletPtr) {
+        bullets.push_front(iBulletPtr);
+        return true;
+    }
 
 }

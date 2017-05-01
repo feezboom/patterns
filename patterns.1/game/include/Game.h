@@ -84,9 +84,13 @@ namespace game {
          *
          * @return
          */
-        bool _clearObjectsFromScreen_() {
-            std::for_each(m_field.objects.begin(), m_field.objects.end(),
-                          [](IObjectPtr objectPtr) { objectPtr->eraseFigure(); });
+        bool _clearAllObjectsFromScreen_() {
+            for (auto& iObstaclePtr : m_field.obstacles) {
+                iObstaclePtr->eraseFigure();
+            }
+            for (auto& iBulletPtr : m_field.bullets) {
+                iBulletPtr->eraseFigure();
+            }
             m_field.rocket->eraseFigure();
             return true;
         }
@@ -98,12 +102,11 @@ namespace game {
         bool _drawObjectsByType_(ObjectType type);
 
         bool _drawAllObjects_() const {
-//            for_each(m_field.objects.begin(),
-//                     m_field.objects.end(), [](IObjectPtr objectPtr) {
-//                        objectPtr->drawFigure();
-//                    });
-            for (auto i = m_field.objects.begin(); i != m_field.objects.end(); ++i) {
-                (*i)->drawFigure();
+            for (auto& iObstaclePtr : m_field.obstacles) {
+                iObstaclePtr->drawFigure();
+            }
+            for (auto& iBulletPtr : m_field.bullets) {
+                iBulletPtr->drawFigure();
             }
             m_field.rocket->drawFigure();
             refresh();
@@ -125,7 +128,7 @@ namespace game {
         bool _removeObjectsCollidedByBullets_();
 
 
-        bool _checkCollision_(IObjectPtr obj1, IObjectPtr obj2);
+        bool _isCollision_(IObjectPtr obj1, IObjectPtr obj2);
 
         /**
          *
@@ -136,10 +139,11 @@ namespace game {
     private:
         class GameField {
         public:
-            bool addObject(IObjectPtr);
-
+            bool addObstacle(IObjectPtr);
+            bool addBullet(IObjectPtr);
         public:
-            std::list<IObjectPtr> objects;
+            std::list<IObjectPtr> obstacles;
+            std::list<IObjectPtr> bullets;
             IObjectPtr rocket;
             ShiftType xMax, yMax;
         };
