@@ -62,7 +62,7 @@ namespace game {
          *
          * @return unsigned - Number of new generated objects
          */
-        unsigned _generateNewObstacles_();
+        unsigned _generateNewObstacles_(unsigned maxObjects);
 
         /**
          *
@@ -76,7 +76,7 @@ namespace game {
         unsigned _moveBullets_(unsigned nSymbols = 1,
                                Direction direction = right);
 
-        bool _moveDrawRocket_(Direction direction);
+        bool _moveRocket_(Direction direction);
 
         bool _generateBullet_(const Point& position);
 
@@ -87,6 +87,7 @@ namespace game {
         bool _clearObjectsFromScreen_() {
             std::for_each(m_field.objects.begin(), m_field.objects.end(),
                           [](IObjectPtr objectPtr) { objectPtr->eraseFigure(); });
+            m_field.rocket->eraseFigure();
             return true;
         }
 
@@ -101,6 +102,7 @@ namespace game {
                      m_field.objects.end(), [](IObjectPtr objectPtr) {
                         objectPtr->drawFigure();
                     });
+            m_field.rocket->drawFigure();
             return true;
         }
 

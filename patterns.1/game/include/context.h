@@ -41,6 +41,10 @@ namespace game {
     mvprintw(y,0,std::to_string(blo).c_str()); \
     refresh(); \
 
+#define printstrnumxy(y, x, str, num) \
+    mvprintw(y,x,(str + std::to_string(num)).c_str()); \
+    refresh(); \
+
 }
 
 #endif //GAME_CONTEXT_H

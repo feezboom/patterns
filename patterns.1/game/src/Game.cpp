@@ -16,7 +16,7 @@ namespace game {
 
 using std::for_each;
 
-Game::Game() : m_rocketFPS(2000), m_obstaclesFPS(5) {
+Game::Game() : m_rocketFPS(1500), m_obstaclesFPS(5) {
     initscr();
     noecho(); // Character is not printed if pressed
     nodelay(stdscr, TRUE);
@@ -44,7 +44,7 @@ bool Game::startGame() {
     unsigned rocketUpdateDelay = static_cast<unsigned>((10e6 / m_rocketFPS));
     unsigned obstaclesUpdateDelay = static_cast<unsigned>((10e6 / m_obstaclesFPS));
 
-    // Obviously ( rocketUpdateDelay << obstaclesUpdateDelay )
+    // Obviously ?? ( rocketUpdateDelay << obstaclesUpdateDelay )
     unsigned counter{0};
 
     std::cout << "\r" << rocketUpdateDelay << std::flush;
@@ -64,36 +64,34 @@ bool Game::startGame() {
             int c = getch();
             switch (c) {
                 case KEYUP: {
-                    _moveDrawRocket_(Direction::up);
+                    _moveRocket_(Direction::up);
                     break;
                 }
                 case KEYDOWN: {
-                    _moveDrawRocket_(Direction::down);
+                    _moveRocket_(Direction::down);
                     break;
                 }
-//                case KEYFIRE: {
-//                    _generateBullet_(m_field.rocket->getPos());
-//                    break;
-//                }
+                case KEYFIRE: {
+                    _generateBullet_(m_field.rocket->getPos());
+                    break;
+                }
                 default: {
                     break;
                 }
             }
         }
 
-//        // Update bullets
-//        _moveBullets_(1, Direction::right);
-//
-//        // Update obstacles
-//        _generateNewObstacles_();
-//        _moveObstacles_(1, Direction::left);
-//
-//        _drawAllObjects_();
+        // Update bullets
+        _moveBullets_(1, Direction::right);
 
-        printnumy(m_field.yMax-1, counter++);
-//        if (counter > 1000000) {
-//            break;
-//        }
+        // Update obstacles
+        _generateNewObstacles_(1);
+        _moveObstacles_(1, Direction::left);
+
+        _drawAllObjects_();
+        m_field.rocket->drawFigure();
+
+        printstrnumxy(m_field.yMax-1, 0, "Iteration: ", counter++)
     }
     return true;
 }
@@ -119,6 +117,8 @@ unsigned Game::_moveObstacles_(unsigned int nSymbols, Direction direction) {
     return counter;
 }
 
+    static int count{0};
+
 unsigned Game::_moveBullets_(unsigned int nSymbols, Direction direction) {
     unsigned counter{0};
     for_each(m_field.objects.begin(),
@@ -126,17 +126,20 @@ unsigned Game::_moveBullets_(unsigned int nSymbols, Direction direction) {
                 if (objectPtr->getType() == ObjectType::eBullet) {
                     objectPtr->move(nSymbols, direction);
                     counter++;
+                    count++;
                 }
             });
+    printstrnumxy(m_field.yMax-1, 50, "moved bullets : ", count);
+
     return counter;
 }
 
-unsigned Game::_generateNewObstacles_() {
+unsigned Game::_generateNewObstacles_(unsigned maxObjects) {
     // initialize random seed:
     srand(static_cast<unsigned>(time(0)));
 
     // Generate number of obstacles to generate.
-    unsigned obstaclesToGenerate = static_cast<unsigned>(rand()) % 3;
+    unsigned obstaclesToGenerate = static_cast<unsigned>(rand()) % maxObjects;
 
     for (unsigned i = 0; i < obstaclesToGenerate; ++i) {
         // Generate random object from storage
@@ -201,7 +204,7 @@ unsigned int Game::_removeOutOfScreenObjects_() {
 
         // If object is out of bounds then erase it.
         unsigned x_coord = (*i)->getPos().x;
-        if (x_coord > m_field.xMax || x_coord < 0) {
+        if (x_coord > m_field.xMax || x_coord <= 0) {
             m_field.objects.erase(i++);
             removedCount++;
         }
@@ -220,15 +223,20 @@ bool Game::_keyPressed_(void) {
     }
 }
 
-bool Game::_moveDrawRocket_(Direction direction) {
-    m_field.rocket->eraseFigure();
+bool Game::_moveRocket_(Direction direction) {
     m_field.rocket->move(1, direction);
-    m_field.rocket->drawFigure();
     return true;
 }
 
+    static int anotherCounter{0};
+
 bool Game::_generateBullet_(const Point& position) {
+    printstrnumxy(m_field.yMax-1, 80, "I'm in generate bullet!! ", anotherCounter++);
     IObjectPtr bulletPtr = ObjectFactory::createObject("bullet", m_ASCIIBullet);
+    Point pos = m_field.rocket->getPos();
+    bulletPtr->setPos(pos.y + 2, pos.x + 1);
+    bulletPtr->setType(ObjectType::eBullet);
+
     m_field.addObject(bulletPtr);
     return true;
 }
