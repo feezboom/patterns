@@ -23,6 +23,8 @@ Game::Game() : m_rocketFPS(1500), m_obstaclesFPS(5) {
     nodelay(stdscr, TRUE);
     curs_set(0); // Makes cursor invisible
 
+    srand(static_cast<unsigned>(time(0)));
+
     // Create obstacles from files.
     _loadObjects_("../resources/obstacles_list.txt");
 
@@ -207,9 +209,6 @@ ShiftType Game::_moveBullets_(ShiftType nSymbols, Direction direction) {
 }
 
 ShiftType Game::_generateNewObstacles_(ShiftType maxObjects) {
-    // initialize random seed:
-    srand(static_cast<unsigned>(time(0)));
-
     // Generate number of obstacles to generate.
     ShiftType obstaclesToGenerate = static_cast<ShiftType>(rand()) % maxObjects;
 
@@ -218,7 +217,6 @@ ShiftType Game::_generateNewObstacles_(ShiftType maxObjects) {
         IObjectPtr generated = ObjectFactory::createRandom(m_ASCIIObstacles);
 
         // Generate random position for it.
-        srand(static_cast<unsigned>(time(0)));
         ShiftType yPos = rand() % m_field.yMax, xPos{m_field.xMax - 8};
         generated->setPos(yPos, xPos);
         generated->setType(ObjectType::eObstacle);

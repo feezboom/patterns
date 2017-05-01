@@ -28,7 +28,6 @@ IObjectPtr ObjectFactory::createObject(const ObjectName& name, const ObjectASCII
 
 IObjectPtr ObjectFactory::createRandom(ObjectsStorage &asciiObstacles) {
 
-    srand(static_cast<unsigned>(time(0)));
     unsigned chose = rand() % (unsigned) asciiObstacles.size();
 
     const ObjectName& chosenName = asciiObstacles[chose].first;
