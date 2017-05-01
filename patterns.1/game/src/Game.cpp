@@ -17,7 +17,8 @@ namespace game {
 
     using std::for_each;
 
-    Game::Game() : m_rocketFPS(1500), m_obstaclesFPS(500) {
+    Game::Game() : m_rocketFPS(500), m_obstaclesFPS(500),
+                   m_currentScore{0}, loose(false) {
         initscr();
         noecho(); // Character is not printed if pressed
         nodelay(stdscr, TRUE);
@@ -152,17 +153,28 @@ namespace game {
             }
 
             // Update bullets
-            _moveBulletsAndCheckCollisions_(1, Direction::right);
+            _moveBulletsAndCheckCollisions_(2, Direction::right);
 
             bool generateNew = (counter % (m_rocketFPS * 10 / m_obstaclesFPS) == 0);
             bool moveOldOnes = (counter % (m_rocketFPS / m_obstaclesFPS) == 0);
-            _generateUpdateObstacles_(generateNew, moveOldOnes, 2);
+            _generateMoveObstacles_(generateNew, moveOldOnes, 2);
 
             _drawAllObjects_();
 
             printstrnumxy(m_field.yMax - 1, 0, "Iteration: ", counter++)
             printstrnumxy(m_field.yMax - 1, 20, "Bullets count : ", m_field.bullets.size())
             printstrnumxy(m_field.yMax - 1, 120, "Obstacles count : ", m_field.obstacles.size())
+
+            _printCurrentScore_();
+
+            if (loose) {
+                mvprintw(m_field.yMax/2, m_field.xMax/2, "YOU LOSE");
+                nodelay(stdscr, FALSE);
+                while (getch() != 'q');
+                return true;
+            }
+
+            refresh();
         }
         return true;
     }
@@ -173,6 +185,8 @@ namespace game {
 
     bool Game::_updateScreenSizes_() {
         getmaxyx(stdscr, m_field.yMax, m_field.xMax);
+        m_scoreYPos = m_field.yMax - 1;
+        m_scoreXPos = 45;
         return true;
     }
 
@@ -181,7 +195,11 @@ namespace game {
         for (auto &iObstaclePtr : m_field.obstacles) {
             assert(iObstaclePtr->getType() == ObjectType::eObstacle);
             iObstaclePtr->move(nSymbols, direction);
-            counter++;
+            if (_isCollision_(m_field.rocket, iObstaclePtr)) {
+                loose = true;
+                return 0;
+            }
+                counter++;
         };
         return counter;
     }
@@ -212,6 +230,7 @@ namespace game {
                     obstacleIter = m_field.obstacles.erase(obstacleIter);
                     bulletIter = m_field.bullets.erase(bulletIter);
                     counter++; count++;
+                    m_currentScore++;
                 }
             }
         }
@@ -274,29 +293,16 @@ namespace game {
                         objectPtr->drawFigure();
                     }
                 });
+        refresh();
         return true;
     }
 
-    unsigned int Game::_removeOutOfScreenObjects_() {
-        unsigned removedCount{0};
-
-        auto outOfBoundsRemover = [this, &removedCount](auto& container) {
-            auto iter = container.begin(),
-                    end = container.end();
-            for (; iter != end; ++iter) {
-                IObjectPtr objectPtr = *iter;
-                if (_isOutOfBounds_(objectPtr)) {
-                    iter = container.erase(iter);
-                    removedCount++;
-                }
-            }
-        };
-
-        // Iterating over objects which exist in the m_field.
-        outOfBoundsRemover(this->m_field.obstacles);
-        outOfBoundsRemover(this->m_field.bullets);
-
-        return removedCount;
+    unsigned long Game::_removeOutOfScreenObjects_() {
+        unsigned long size_before = m_field.obstacles.size() + m_field.bullets.size();
+        auto pFunction = [this](IObjectPtr obj) { return _isOutOfBounds_(obj); };
+        m_field.obstacles.remove_if(pFunction);
+        m_field.bullets.remove_if(pFunction);
+        return size_before - m_field.obstacles.size() - m_field.bullets.size();
     }
 
     bool Game::_keyPressed_(void) {
@@ -330,7 +336,7 @@ namespace game {
         return true;
     }
 
-    unsigned Game::_generateUpdateObstacles_(bool generate, bool move, unsigned maxToGen) {
+    unsigned Game::_generateMoveObstacles_(bool generate, bool move, unsigned maxToGen) {
         // Update obstacles
         if (generate) {
             _generateNewObstacles_(maxToGen);
@@ -370,6 +376,22 @@ namespace game {
     bool Game::_isOutOfBounds_(IObjectPtr obj) {
         ShiftType x_coord = obj->getPos().x;
         return x_coord > m_field.xMax || x_coord <= 0;
+    }
+
+    bool Game::_drawAllObjects_() const {
+        for (auto& iObstaclePtr : m_field.obstacles) {
+            iObstaclePtr->drawFigure();
+        }
+        for (auto& iBulletPtr : m_field.bullets) {
+            iBulletPtr->drawFigure();
+        }
+        m_field.rocket->drawFigure();
+        refresh();
+        return true;
+    }
+
+    void Game::_printCurrentScore_() {
+        printstrnumxy(m_scoreYPos, m_scoreXPos, "Your score : ", m_currentScore);
     }
 
     bool Game::GameField::addObstacle(IObjectPtr iObstaclePtr) {

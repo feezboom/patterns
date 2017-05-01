@@ -101,28 +101,19 @@ namespace game {
          */
         bool _drawObjectsByType_(ObjectType type);
 
-        bool _drawAllObjects_() const {
-            for (auto& iObstaclePtr : m_field.obstacles) {
-                iObstaclePtr->drawFigure();
-            }
-            for (auto& iBulletPtr : m_field.bullets) {
-                iBulletPtr->drawFigure();
-            }
-            m_field.rocket->drawFigure();
-            refresh();
-            return true;
-        }
+        bool _drawAllObjects_() const;
 
         /**
          *
          * @return
          */
-        unsigned int _removeOutOfScreenObjects_();
+        unsigned long _removeOutOfScreenObjects_();
 
-        unsigned _generateUpdateObstacles_(bool generate, bool move, unsigned maxToGen);
+        unsigned _generateMoveObstacles_(bool generate, bool move, unsigned maxToGen);
 
         bool _isCollision_(IObjectPtr obj1, IObjectPtr obj2);
 
+        friend class OutOfBoundsRemover;
         bool _isOutOfBounds_(IObjectPtr);
 
         /**
@@ -130,6 +121,8 @@ namespace game {
          * @return
          */
         static bool _keyPressed_(void);
+
+        void _printCurrentScore_();
 
     private:
         class GameField {
@@ -150,6 +143,11 @@ namespace game {
         ObjectsStorage m_ASCIIObstacles;
         ObjectASCII m_ASCIIBullet;
         ObjectASCII m_ASCIIRocket;
+
+        unsigned long m_currentScore;
+        ShiftType m_scoreXPos, m_scoreYPos;
+
+        bool loose;
 
     };
 
