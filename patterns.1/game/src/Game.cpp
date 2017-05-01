@@ -26,7 +26,7 @@ Game::Game() : m_rocketFPS(1500), m_obstaclesFPS(5) {
     _loadObjects_("../resources/obstacles_list.txt");
 
     // Create rocket from file.
-    std::ifstream rocketStream("../resources/rocket", std::ios_base::in);
+    std::ifstream rocketStream("../resources/apple", std::ios_base::in);
     m_ASCIIRocket = ObjectFactory::loadObject(rocketStream);
     IObjectPtr rocketPtr = ObjectFactory::createObject("rocket", m_ASCIIRocket);
     m_field.rocket = rocketPtr;
@@ -47,7 +47,7 @@ bool Game::startGame() {
     // Obviously ?? ( rocketUpdateDelay << obstaclesUpdateDelay )
     ShiftType counter{0};
 
-    std::cout << "\r" << rocketUpdateDelay << std::flush;
+//    std::cout << "\r" << rocketUpdateDelay << std::flush;
 
     while (usleep(rocketUpdateDelay) == 0 /* delay succeeded */ ) {
 //      1) Capture user's pressed button and then update rocket position.
@@ -71,6 +71,14 @@ bool Game::startGame() {
                     _moveRocket_(Direction::down);
                     break;
                 }
+                case KEYLEFT: {
+                    _moveRocket_(Direction::left);
+                    break;
+                }
+                case KEYRIGHT: {
+                    _moveRocket_(Direction::right);
+                    break;
+                }
                 case KEYFIRE: {
                     _generateBullet_(m_field.rocket->getPos());
                     break;
@@ -78,6 +86,26 @@ bool Game::startGame() {
                 case KEYPAUSE: {
                     nodelay(stdscr, FALSE);
                     while (getch() != KEYCONTINUE);
+                    nodelay(stdscr, TRUE);
+                }
+                case KEYDEBUG: {
+                    nodelay(stdscr, FALSE);
+                    _clearObjectsFromScreen_();
+                    while ((c=getch()) != KEYDEBUG) {
+                        m_field.rocket->eraseFigure();
+
+                        if (c == KEYRIGHT) {
+                            m_field.rocket->move(1, right);
+                        } else if (c == KEYLEFT) {
+                            m_field.rocket->move(1, left);
+                        } else if (c == KEYUP) {
+                            m_field.rocket->move(1, up);
+                        } else if (c == KEYDOWN) {
+                            m_field.rocket->move(1, down);
+                        }
+                        m_field.rocket->drawFigure();
+
+                    }
                     nodelay(stdscr, TRUE);
                 }
                 default: {
@@ -152,7 +180,7 @@ ShiftType Game::_generateNewObstacles_(ShiftType maxObjects) {
 
         // Generate random position for it.
         srand(static_cast<unsigned>(time(0)));
-        ShiftType yPos = rand() % m_field.yMax, xPos{m_field.xMax};
+        ShiftType yPos = rand() % m_field.yMax, xPos{m_field.xMax - 1};
         generated->setPos(yPos, xPos);
         generated->setType(ObjectType::eObstacle);
 

@@ -14,9 +14,12 @@ namespace game {
 
     #define KEYUP 65
     #define KEYDOWN 66
+    #define KEYRIGHT 67
+    #define KEYLEFT 68
     #define KEYFIRE ' '
     #define KEYPAUSE 'p'
     #define KEYCONTINUE 'c'
+    #define KEYDEBUG 'd'
 
     // Todo : replace all unsigned with such shit:
     typedef int ShiftType;

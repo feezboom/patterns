@@ -6,6 +6,6 @@
 
 namespace game {
 
-    Point::Point(unsigned y, unsigned x) : y(y), x(x) {}
+    Point::Point(ShiftType y, ShiftType x) : y(y), x(x) {}
 
 }

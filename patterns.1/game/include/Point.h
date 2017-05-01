@@ -5,12 +5,14 @@
 #ifndef GAME_POIN_H
 #define GAME_POIN_H
 
+#include <context.h>
+
 namespace game {
 
     class Point {
     public:
-        Point(unsigned, unsigned);
-        unsigned x, y;
+        Point(ShiftType, ShiftType);
+        ShiftType x, y;
     };
 
 }
