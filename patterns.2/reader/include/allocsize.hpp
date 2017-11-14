@@ -8,12 +8,6 @@
 #include <cassert>
 #include "typelist.h"
 
-using std::string;
-using std::cin;
-using std::cout;
-using Loki::Typelist;
-using NullType = Loki::NullType;
-
 template <typename TL>
 struct AllocSize {};
 
@@ -26,6 +20,5 @@ template <typename Head, typename Tail>
 struct AllocSize<Loki::Typelist<Head, Tail>> {
     constexpr static std::size_t value = sizeof(Head) + AllocSize<Tail>::value;
 };
-
 
 #endif //READER_ALLOCSIZE_H

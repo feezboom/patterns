@@ -8,7 +8,7 @@
 #include <istream>
 #include <cassert>
 
-#include "AllocSize.hpp"
+#include "allocsize.hpp"
 
 template <typename TL, std::size_t shift>
 struct _PrintInternal {
@@ -20,17 +20,17 @@ struct _PrintInternal {
 };
 
 template <typename Head, typename Tail, std::size_t shift>
-struct _PrintInternal<Typelist<Head, Tail>, shift> {
+struct _PrintInternal<Loki::Typelist<Head, Tail>, shift> {
 
     template <typename SeparatorType>
     static void _printObjects(std::ostream &os, const void *ptr, SeparatorType sep) {
-        _PrintInternal<Typelist<Head, NullType>, shift>::_printObjects(os, ptr, sep);
+        _PrintInternal<Loki::Typelist<Head, Loki::NullType>, shift>::_printObjects(os, ptr, sep);
         _PrintInternal<Tail, shift + sizeof(Head)>::_printObjects(os, ptr, sep);
     }
 };
 
 template <typename Head, std::size_t shift>
-struct _PrintInternal<Typelist<Head, NullType>, shift> {
+struct _PrintInternal<Loki::Typelist<Head, Loki::NullType>, shift> {
 
     template <typename SeparatorType>
     static void _printObjects(std::ostream &os, const void *ptr, SeparatorType sep) {

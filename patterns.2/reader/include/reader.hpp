@@ -8,14 +8,9 @@
 #include "typelist.h"
 
 #include <fstream>
-#include <iostream>
-#include <string>
 #include <cassert>
 
-#include "AllocSize.hpp"
-
-
-
+#include "allocsize.hpp"
 
 template <typename TL, std::size_t shift>
 struct _ReaderInternal {
@@ -25,17 +20,17 @@ struct _ReaderInternal {
 };
 
 template <typename Head, typename Tail, std::size_t shift>
-struct _ReaderInternal<Typelist<Head, Tail>, shift> {
+struct _ReaderInternal<Loki::Typelist<Head, Tail>, shift> {
     static void readObjects(std::istream &is, void *ptr) {
         constexpr std::size_t shift_ = shift;
 
-        _ReaderInternal<Typelist<Head, NullType>, shift>::readObjects(is, ptr);
+        _ReaderInternal<Loki::Typelist<Head, Loki::NullType>, shift>::readObjects(is, ptr);
         _ReaderInternal<Tail, shift + sizeof(Head)>::readObjects(is, ptr);
     }
 };
 
 template <typename Head, std::size_t shift>
-struct _ReaderInternal<Typelist<Head, NullType>, shift> {
+struct _ReaderInternal<Loki::Typelist<Head, Loki::NullType>, shift> {
     static void readObjects(std::istream &is, void *ptr) {
         Head tempObj;
         is >> tempObj;
@@ -55,4 +50,5 @@ public:
         return ptr;
     }
 };
+
 #endif //READER_READER_H
