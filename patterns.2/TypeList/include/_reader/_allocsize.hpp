@@ -6,19 +6,19 @@
 #define READER_ALLOCSIZE_H
 
 #include <cassert>
-#include "typelist.h"
+#include <typelist.h>
 
 template <typename TL>
 struct AllocSize {};
 
 template <>
-struct AllocSize<Loki::NullType> {
+struct AllocSize<TypeList<>> {
     constexpr static std::size_t value = 0;
 };
 
-template <typename Head, typename Tail>
-struct AllocSize<Loki::Typelist<Head, Tail>> {
-    constexpr static std::size_t value = sizeof(Head) + AllocSize<Tail>::value;
+template<typename Head, typename ...Args>
+struct AllocSize<TypeList<Head, Args...>> {
+    constexpr static std::size_t value = sizeof(Head) + AllocSize<TypeList<Args...>>::value;
 };
 
 #endif //READER_ALLOCSIZE_H

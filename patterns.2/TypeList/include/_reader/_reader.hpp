@@ -5,12 +5,12 @@
 #ifndef READER_READER_H
 #define READER_READER_H
 
-#include "typelist.h"
+#include <typelist.h>
 
 #include <fstream>
 #include <cassert>
 
-#include "allocsize.hpp"
+#include <_reader/_allocsize.hpp>
 
 template <typename TL, std::size_t shift>
 struct _ReaderInternal {
@@ -19,18 +19,16 @@ struct _ReaderInternal {
     };
 };
 
-template <typename Head, typename Tail, std::size_t shift>
-struct _ReaderInternal<Loki::Typelist<Head, Tail>, shift> {
+template<typename Head, typename ...Args, std::size_t shift>
+struct _ReaderInternal<TypeList<Head, Args...>, shift> {
     static void readObjects(std::istream &is, void *ptr) {
-        constexpr std::size_t shift_ = shift;
-
-        _ReaderInternal<Loki::Typelist<Head, Loki::NullType>, shift>::readObjects(is, ptr);
-        _ReaderInternal<Tail, shift + sizeof(Head)>::readObjects(is, ptr);
+        _ReaderInternal<TypeList<Head>, shift>::readObjects(is, ptr);
+        _ReaderInternal<TypeList<Args...>, shift + sizeof(Head)>::readObjects(is, ptr);
     }
 };
 
 template <typename Head, std::size_t shift>
-struct _ReaderInternal<Loki::Typelist<Head, Loki::NullType>, shift> {
+struct _ReaderInternal<TypeList<Head>, shift> {
     static void readObjects(std::istream &is, void *ptr) {
         Head tempObj;
         is >> tempObj;
