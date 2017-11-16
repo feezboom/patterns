@@ -8,7 +8,15 @@
 #include <cstddef>
 
 template <typename ...Args>
-struct TypeList { };
+struct TypeList {
+
+//    template <typename TL>
+//    struct equals {
+//        static constexpr
+//    };
+//
+//    struct <typename ...Args1>
+};
 
 struct EmptyType { };
 

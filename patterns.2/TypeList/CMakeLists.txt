@@ -62,22 +62,28 @@ set(TYPELIST_SOURCES
         include/_typelist/_typelist.hpp
         include/_typelist/_typeat.hpp
         include/_typelist/_length.hpp
-        include/typelist.h)
-set(READER_SOURCES
-        include/_reader/_allocsize.hpp
-        include/_reader/_reader.hpp
-        include/_reader/_printer.hpp)
+        include/typelist.h include/_typelist/_isempty.hpp include/_typelist/_contains.hpp)
+set(TYPELISTIO_SOURCES
+        include/_typelistio/_allocsize.hpp
+        include/_typelistio/_dumbreader.hpp
+        include/_typelistio/_dumbprinter.hpp
+        include/_typelistio/_dumbdeleter.h
+        include/typelistio.h)
+set(GENERICFUNCTOR_SOURCES
+        include/_genericfunctor/_genericfunctor.hpp
+        include/genericfunctor.h)
 
 set(ALL_SOURCES
         ${TYPELIST_SOURCES}
-        ${READER_SOURCES})
+        ${TYPELISTIO_SOURCES}
+        ${GENERICFUNCTOR_SOURCES})
 
 
 # Tests itself
 set(TYPELIST_TESTS
-        tests/typelist/typelist.cpp)
+        tests/typelist/typelist_test.cpp)
 set(READER_TESTS
-        tests/reader/reader.cpp)
+        tests/reader/reader_test.cpp)
 set(TEST_SOURCES
         ${TYPELIST_TESTS}
         ${READER_TESTS}
@@ -85,7 +91,7 @@ set(TEST_SOURCES
 
 SET(SOURCES
         ${ALL_SOURCES}
-        ${TEST_SOURCES})
+        ${TEST_SOURCES} include/_typelist/_equal.hpp)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
