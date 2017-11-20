@@ -84,9 +84,12 @@ set(TYPELIST_TESTS
         tests/typelist/typelist_test.cpp)
 set(READER_TESTS
         tests/reader/reader_test.cpp)
+set(GENERICFUNCTOR_TESTS
+        tests/genericFunctor/genericfunctor_test.cpp)
 set(TEST_SOURCES
         ${TYPELIST_TESTS}
         ${READER_TESTS}
+        ${GENERICFUNCTOR_TESTS}
         tests/run_tests.cpp)
 
 SET(SOURCES

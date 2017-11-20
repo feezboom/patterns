@@ -9,13 +9,13 @@
 
 template <typename ...Args>
 struct TypeList {
-
 //    template <typename TL>
 //    struct equals {
 //        static constexpr
 //    };
 //
 //    struct <typename ...Args1>
+//    typedef Args... AsPack;
 };
 
 struct EmptyType { };
