@@ -19,14 +19,11 @@
 template<typename TypeList_Type>
 class DumbReader {
 public:
-    static void *nextLine(std::istream &is) {
+    static std::shared_ptr<void> nextLine(std::istream &is) {
         void *ptr = malloc(alloc_size);
         _DumbReaderInternal<TypeList_Type, 0>::readObjects(is, ptr);
-        return ptr;
-    }
-
-    static void deleteLine(void *ptr) {
-
+        std::shared_ptr<void> sp(ptr, free);
+        return sp;
     }
 
 private:

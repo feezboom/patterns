@@ -19,6 +19,13 @@ public:
         _DumbPrintInternal<TypeList_type, 0>::_printObjects(os, ptr, sep);
         os << std::flush;
     };
+
+    template<typename SeparatorType>
+    static void printObjects(std::ostream &os, const std::shared_ptr<void> ptr, SeparatorType sep) {
+        _DumbPrintInternal<TypeList_type, 0>::_printObjects(os, ptr.get(), sep);
+        os << std::flush;
+    };
+
 private:
     template<typename TL, std::size_t shift>
     struct _DumbPrintInternal {

@@ -67,7 +67,6 @@ set(TYPELISTIO_SOURCES
         include/_typelistio/_allocsize.hpp
         include/_typelistio/_dumbreader.hpp
         include/_typelistio/_dumbprinter.hpp
-        include/_typelistio/_dumbdeleter.h
         include/typelistio.h)
 set(GENERICFUNCTOR_SOURCES
         include/_genericfunctor/_genericfunctor.hpp

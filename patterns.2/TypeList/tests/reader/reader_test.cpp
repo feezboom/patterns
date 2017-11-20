@@ -9,14 +9,14 @@ TEST(Reader, Main) {
 
     std::ifstream is("tests/reader/data/hello.txt");
 
+    std::shared_ptr<void> line0 = DumbReader<GivenTypeList>::nextLine(is);
+    std::shared_ptr<void> line1 = DumbReader<GivenTypeList>::nextLine(is);
+
     std::stringstream stringstream;
+    DumbPrinter<GivenTypeList>::printObjects(stringstream, line0.get(), " ");
+    ASSERT_EQ("50 hello 1.5 ", stringstream.str());
 
-    void *line0 = DumbReader<GivenTypeList>::nextLine(is);
-    void *line1 = DumbReader<GivenTypeList>::nextLine(is);
-
-    std::cout << std::endl;
-    DumbPrinter<GivenTypeList>::printObjects(stringstream, line0, " ");
-    stringstream << std::endl;
-    DumbPrinter<GivenTypeList>::printObjects(stringstream, line1, " ");
-    std::cout << stringstream.str() << std::endl;
+    stringstream.str("");
+    DumbPrinter<GivenTypeList>::printObjects(stringstream, line1.get(), " ");
+    ASSERT_EQ("25 world 0.75 ", stringstream.str());
 };

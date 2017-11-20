@@ -29,6 +29,7 @@ auto f5 = [](char x, int y, int z, std::vector<int> &v, std::vector<std::string>
 
 
 TEST(GenericFunctor, Main) {
+
     GenericFunctor<int, TypeList<>> F0(f0);
     GenericFunctor<int, TypeList<int>> F1(f1);
     GenericFunctor<double, TypeList<int, double>> F2(f2);
@@ -45,4 +46,20 @@ TEST(GenericFunctor, Main) {
     ASSERT_EQ(F3(1, 2, "3"), "123");
     ASSERT_EQ(F4('a', 1, 2, vi), 'b');
     ASSERT_EQ(F5('a', 1, 2, vi, vs), 'c');
+
+
+    GenericFunctor<int, TypeList<>> FF0(F0);
+    GenericFunctor<int, TypeList<int>> FF1(F1);
+    GenericFunctor<double, TypeList<int, double>> FF2(F2);
+    GenericFunctor<std::string, TypeList<int, double, const std::string &>> FF3(F3);
+    GenericFunctor<char, TypeList<char, int, int, std::vector<int> &>> FF4(F4);
+    GenericFunctor<char, TypeList<char, int, int, std::vector<int> &, std::vector<std::string> &>> FF5(F5);
+
+    ASSERT_EQ(F0(), FF0());
+    ASSERT_EQ(F1(2), FF1(2));
+    ASSERT_EQ(F2(2, 2.5), FF2(2, 2.5));
+    ASSERT_EQ(F3(1, 2, "3"), FF3(1, 2, "3"));
+    ASSERT_EQ(F4('a', 1, 2, vi), FF4('a', 1, 2, vi));
+    ASSERT_EQ(F5('a', 1, 2, vi, vs), FF5('a', 1, 2, vi, vs));
+
 }
