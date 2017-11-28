@@ -34,4 +34,15 @@ struct Length<TypeList<Args...>> {
     constexpr static std::size_t value = sizeof... (Args);
 };
 
+
+template<typename ...TLs>
+struct SameLength {
+    constexpr static bool value = true;
+};
+
+template<typename TL0, typename TL1, typename ... TLs>
+struct SameLength<TL0, TL1, TLs...> {
+    constexpr static bool value = (Length<TL0>::value == Length<TL1>::value) && SameLength<TL1, TLs...>::value;
+};
+
 #endif //TYPELIST_LENGTH_H

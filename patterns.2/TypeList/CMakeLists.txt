@@ -67,6 +67,7 @@ set(TYPELISTIO_SOURCES
         include/_typelistio/_allocsize.hpp
         include/_typelistio/_dumbreader.hpp
         include/_typelistio/_dumbprinter.hpp
+        include/_typelistio/_reader.hpp
         include/typelistio.h)
 set(GENERICFUNCTOR_SOURCES
         include/_genericfunctor/_genericfunctor.hpp
@@ -82,7 +83,7 @@ set(ALL_SOURCES
 set(TYPELIST_TESTS
         tests/typelist/typelist_test.cpp)
 set(READER_TESTS
-        tests/reader/reader_test.cpp)
+        tests/reader/dumb_reader_test.cpp tests/reader/reader_test.cpp)
 set(GENERICFUNCTOR_TESTS
         tests/genericFunctor/genericfunctor_test.cpp)
 set(TEST_SOURCES

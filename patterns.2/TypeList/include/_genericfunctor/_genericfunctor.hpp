@@ -25,9 +25,27 @@ public:
     };
 
 private:
-    using InvokerType_ = _Result (*)(_ArgTypes ...);
-    InvokerType_ _invoker;
+    using _InvokerType = _Result (*)(_ArgTypes ...);
+    _InvokerType _invoker;
 };
+
+
+//template<typename R, typename Callable>
+//class Functor_ {
+//public:
+//
+//    // Main constructor from any callable
+//    explicit Functor_(const Callable &callable) : _invoker(callable) {}
+//
+//    template <typename ..._ArgTypes>
+//    R operator()(_ArgTypes... args) {
+//        return _invoker(args...);
+//    };
+//
+//private:
+//    Callable _invoker;
+//};
+
 
 
 //template <typename Result, typename TL>
