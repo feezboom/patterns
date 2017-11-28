@@ -7,10 +7,10 @@ TEST(DumbReader, Main) {
 
     using GivenTypeList = TypeList<int, std::string, double>;
 
-    std::ifstream is("tests/reader/data/hello.txt");
+    std::ifstream is("tests/reader/data/dumb.txt");
 
-    std::shared_ptr<void> line0 = DumbReader<GivenTypeList>::nextLine(is);
-    std::shared_ptr<void> line1 = DumbReader<GivenTypeList>::nextLine(is);
+    std::shared_ptr<void> line0 = DumbReader<GivenTypeList>::readTypes(is);
+    std::shared_ptr<void> line1 = DumbReader<GivenTypeList>::readTypes(is);
 
     std::stringstream stringstream;
     DumbPrinter<GivenTypeList>::printObjects(stringstream, line0.get(), " ");
