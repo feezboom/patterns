@@ -5,6 +5,7 @@
 #include <sstream>
 #include <gtest/gtest.h>
 #include <typelistio.h>
+#include <_typelistio/_decompressreader.hpp>
 
 namespace transformers {
 
@@ -35,84 +36,98 @@ namespace transformers {
         Functor() : GenericFunctor<To, TypeList<FromArgs...>>(Function()) {};
     };
 
-    namespace int_ {
+    struct SuperDoubleInt {
+        int decompress() {
+            return int(x * 2);
+        }
 
-        typedef Divider<int, double, 1> toDouble;
-        typedef Divider<int, long, 1> toLong;
-        typedef Divider<int, int, 1> toInt;
+        double x;
+    };
 
-        typedef Multiplier<int, double, 3> toDoubleTriple;
-        typedef Multiplier<int, long, 3> toLongTriple;
-        typedef Multiplier<int, int, 3> toIntTriple;
-
-        typedef Divider<int, double, 3> toDoubleDivide3;
-        typedef Divider<int, long, 3> toLongDivide3;
-        typedef Divider<int, int, 3> toIntDivide3;
-
+    std::istream &operator>>(std::istream &is, SuperDoubleInt &sd) {
+        is >> sd.x;
     }
 
-    namespace double_ {
 
-        typedef Divider<double, double, 1> toDouble;
-        typedef Divider<double, long, 1> toLong;
-        typedef Divider<double, int, 1> toInt;
+    struct SuperIntDouble {
+        double decompress() {
+            return double(x / 2.0);
+        }
 
-        typedef Multiplier<double, double, 3> toDoubleTriple;
-        typedef Multiplier<double, long, 3> toLongTriple;
-        typedef Multiplier<double, int, 3> toIntTriple;
+        int x;
+    };
 
-        typedef Divider<double, double, 3> toDoubleDivide3;
-        typedef Divider<double, long, 3> toLongDivide3;
-        typedef Divider<double, int, 3> toIntDivide3;
-
+    std::istream &operator>>(std::istream &is, SuperIntDouble &si) {
+        is >> si.x;
     }
 
-    namespace long_ {
 
-        typedef Divider<long, double, 1> toDouble;
-        typedef Divider<long, long, 1> toLong;
-        typedef Divider<long, int, 1> toInt;
+    struct SuperIntString {
+        std::string decompress() {
+            std::stringstream ss;
+            ss >> x;
+            return ss.str();
+        }
 
-        typedef Multiplier<long, double, 3> toDoubleTriple;
-        typedef Multiplier<long, long, 3> toLongTriple;
-        typedef Multiplier<long, int, 3> toIntTriple;
+        int x;
+    };
 
-        typedef Divider<long, double, 3> toDoubleDivide3;
-        typedef Divider<long, long, 3> toLongDivide3;
-        typedef Divider<long, int, 3> toIntDivide3;
+    std::istream &operator>>(std::istream &is, SuperIntString &sis) {
+        is >> sis.x;
     }
-
 
 }
 
-// Implication for 2 booleans.
-template<bool x, bool y>
-struct Implication {
-    constexpr static bool value = !x || y;
-};
 
-TEST(Reader, Main) {
+TEST(Reader, main) {
 
-    // use the list of generalized functions
-    using F0 = transformers::Functor<transformers::int_::toIntDivide3, /*To*/int, /*From*/double>;
-    using F1 = transformers::Functor<transformers::double_::toDoubleDivide3, /*To*/double, /*From*/int>;
-
-    using ResultTypeList = TypeList<int, double>; // To
-    using ReadTypeList = TypeList<double, int>; // From
-    using DecompressorsTypeList = TypeList<F0, F1>;
-
-    using reader = Reader<ResultTypeList, ReadTypeList, DecompressorsTypeList>;
-//    reader();
+    using ResultTypeList = TypeList<double, int>; // To
 
     std::fstream test0("tests/reader/data/reader0.txt", std::ios_base::in);
 
-    std::tuple<double, int> readLine = reader::readTypes(test0);
-    ASSERT_EQ(std::get<0>(readLine), 8.3);
-    ASSERT_EQ(std::get<1>(readLine), 5);
+    std::tuple<double, int> readLine = Reader<ResultTypeList>::readTypes(test0);
+    ASSERT_EQ((std::get<0>(readLine)), 8.3);
+    ASSERT_EQ((std::get<1>(readLine)), 5);
+
+}
+
+TEST(DecompressReader, main) {
+
+    auto half = [](int x) -> double {
+        return x / 2.0;
+    };
+
+    auto triple = [](double x) -> int {
+        return (int) (x * 3);
+    };
 
 
-    std::tuple<int, double> decompressedLine = reader::readDecompressTypes(test0);
-    ASSERT_EQ(std::get<0>(decompressedLine), int(4.1 / 3));
-    ASSERT_EQ(std::get<1>(decompressedLine), 7 / 3.0);
+    using HALF = decltype(half);
+    using TRIPLE = decltype(triple);
+    using TOSTRING = decltype(transformers::toString<int>);
+
+    using transformers::SuperDoubleInt;
+    using transformers::SuperIntDouble;
+    using transformers::SuperIntString;
+
+    using TL1 = TypeList<int, double, std::string>;
+    using TL2 = TypeList<SuperDoubleInt, SuperIntDouble, SuperIntString>;
+    using TL3 = TypeList<SingleArgNullFunc, SingleArgNullFunc, SingleArgNullFunc>;
+
+    using DR = DecompressReader<TL1, TL2, TL3>;
+
+    std::fstream source("tests/reader/data/dr0.txt", std::ios_base::in);
+
+    auto f1 = SingleArgNullFunc < int, SuperDoubleInt>();
+    auto f2 = SingleArgNullFunc < double, SuperIntDouble>();
+    auto f3 = SingleArgNullFunc<std::string, SuperIntString>();
+    auto resTuple = DR::readTypes(source, f1, f2, f3);
+
+    source.close();
+
+//    using DDR = DoubleDecompressReader<
+}
+
+TEST(DoubleDecompressReader, main) {
 
 }

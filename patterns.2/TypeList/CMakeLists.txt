@@ -62,13 +62,16 @@ set(TYPELIST_SOURCES
         include/_typelist/_typelist.hpp
         include/_typelist/_typeat.hpp
         include/_typelist/_length.hpp
-        include/typelist.h include/_typelist/_isempty.hpp include/_typelist/_contains.hpp)
+        include/_typelist/_isempty.hpp
+        include/_typelist/_contains.hpp
+        include/typelist.h)
 set(TYPELISTIO_SOURCES
         include/_typelistio/_allocsize.hpp
         include/_typelistio/_dumbreader.hpp
         include/_typelistio/_dumbprinter.hpp
         include/_typelistio/_reader.hpp
-        include/typelistio.h)
+        include/_typelistio/_doubledecompressreader.hpp
+        include/typelistio.h include/_typelistio/_nulltypes.hpp include/_typelistio/_readerutils.hpp include/_typelistio/_decompressreader.hpp)
 set(GENERICFUNCTOR_SOURCES
         include/_genericfunctor/_genericfunctor.hpp
         include/genericfunctor.h)
