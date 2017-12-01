@@ -89,38 +89,48 @@ public:
     static_assert(allCorrect, "template checks failed");
 
 public:
+
+    // todo : may be pass as argument std::tuple<FHead, FArgs...>?
     static std::tuple<ResHead, ResArgs...> readTypes(std::istream &is, FHead fHead, FArgs ... funcs) {
-//        using ArgType = typename std::conditional<readHeadIsNull, ResHead, ReadHead>::type;
-        using Functor = GenericFunctor<ResHead, TypeList<ResHead>>;
-        using ID = SAIF<ResHead>;
-
-//        ReadHead rdh;
-
-
-        // Trick just for compiler.
-        using NullF = SAIF<ResHead>;
-        using NullT = NTIDM<ResHead>;
-        using ToApplyF = typename std::conditional<readHeadIsNull, Functor, NullF>::type;
-        using ToApplyTD = typename std::conditional<readHeadIsNull, NullT, ReadHead>::type;
-
-        using FheadFictive = typename std::conditional<readHeadIsNull, FHead, NullF>::type;
-
-        // Replace NullFunc with SAIF<ResHead>
-        FheadFictive *_fHead = reinterpret_cast<FheadFictive *>(&fHead);
-        // Creating generic functor - what compiler wants to see
-        Functor _f(*_fHead);
-
-        // Typed read results
-        ToApplyTD *rdh = new ToApplyTD();
-        ResHead rsh;
-
         // Final result
         ResHead r;
 
         if (!readHeadIsNull) {
+
+            // Typed read results
+            // Trick for compiler.
+            // Substituting user NullType with NTIDM<ResHead> instead just for compiler
+            // cause it has method ->decompress() implemented.
+            // In fact it will be never called.
+            using NullT = NTIDM<ResHead>;
+            using ToApplyTD = typename std::conditional<readHeadIsNull, NullT, ReadHead>::type;
+
+            // Create needed. In fact NTIDM will be never created. It is just for compiler.
+            ToApplyTD *rdh = new ToApplyTD();
+
+            // Read, call decompress and then delete it.
             is >> *rdh;
             r = rdh->decompress();
+
+            delete rdh;
+
         } else {
+
+            // Trick just for compiler.
+            // Substituting NullFunctor with SAIF<ResHead> cause it
+            // has operator()(...) implemented.
+            // In fact it will never be used.
+            using NullF = SAIF<ResHead>;
+            using Functor = GenericFunctor<ResHead, TypeList<ResHead>>;
+            using ToApplyF = typename std::conditional<readHeadIsNull, Functor, NullF>::type;
+            using FheadFictive = typename std::conditional<readHeadIsNull, FHead, NullF>::type;
+
+            // Replace NullFunc with SAIF<ResHead>
+            // And creating generic functor - what compiler wants to see
+            FheadFictive *_fHead = reinterpret_cast<FheadFictive *>(&fHead);
+            Functor _f(*_fHead);
+
+            ResHead rsh;
             is >> rsh;
             r = _f(rsh);
         }

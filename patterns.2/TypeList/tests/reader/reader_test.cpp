@@ -112,21 +112,16 @@ TEST(DecompressReader, main) {
 
     using TL1 = TypeList<int, double, std::string>;
     using TL2 = TypeList<SuperDoubleInt, SuperIntDouble, SuperIntString>;
-//    using TL3 = TypeList<SAIF<int>, SAIF<double>, SAIF<std::string>>;
     using TL3 = TypeList<NullFunctor, NullFunctor, NullFunctor>;
 
     using DR = DecompressReader<TL1, TL2, TL3>;
 
     std::fstream source("tests/reader/data/dr0.txt", std::ios_base::in);
 
-//    auto f1 = SAIF<int>();
-//    auto f2 = SAIF<double>();
-//    auto f3 = SAIF<std::string>();
-//
-    auto f1 = NullFunctor();
-    auto f2 = NullFunctor();
-    auto f3 = NullFunctor();
-    auto resTuple = DR::readTypes(source, f1, f2, f3);
+    auto t1 = NullType();
+
+    auto nf = NullFunctor();
+    auto resTuple = DR::readTypes(source, nf, nf, nf);
 
     source.close();
 
