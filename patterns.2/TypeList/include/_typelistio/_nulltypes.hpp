@@ -5,6 +5,9 @@
 #ifndef TYPELIST_NULLTYPES_HPP
 #define TYPELIST_NULLTYPES_HPP
 
+#include <istream>
+#include <cassert>
+
 class NullFunctor {
 };
 
@@ -22,11 +25,16 @@ public:
 template<typename ResType>
 class NTIDM {
 public:
-    ResType &decompress() const {
-        return ResType();
+    ResType decompress() const {
         assert(false);
+        return ResType();
     }
 };
+
+template <typename ResType>
+std::istream& operator>>(std::istream&, NTIDM<ResType>) {
+    assert(false);
+}
 
 class NullType {
 };

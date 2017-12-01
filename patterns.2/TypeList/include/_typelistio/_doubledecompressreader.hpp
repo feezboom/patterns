@@ -33,7 +33,6 @@ class DoubleDecompressReader
             TypeList<ResArgs...>,
             TypeList<ToReadArgs...>,
             TypeList<FuncArgs...>>;
-//    using NullFunc = NullFunctor<ResHead, ToReadHead>;
 
 public:
     static std::tuple<ResHead, ResArgs...> readTypes(std::istream &is, FuncHead fHead, FuncArgs &&... fArgs) {

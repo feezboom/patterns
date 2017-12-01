@@ -47,7 +47,7 @@ public:
     using TailReader = DecompressReader<ResTail, ReadTail, FTail>;
     using IdFunctor = GenericFunctor<ResHead, TypeList<ResHead>>;
     // The FHead type we expect according to ResHead and ReadHead.
-    using ExpectedHeadFunctor = GenericFunctor<ResHead, TypeList<ReadHead>>;
+    using ExpectedHeadFunctor = GenericFunctor<ResHead, TypeList<ResHead>>;
 
 
     // Needed constants to check correctness of given template parameters
@@ -57,7 +57,7 @@ public:
     // ReadHead is NullType
     constexpr static bool readHeadIsNull = std::is_same<ReadHead, NullType>::value;
     // Derived from GenericFunctor
-    constexpr static bool fHeadDerivedFromGeneric = std::is_base_of<ExpectedHeadFunctor, FHead>::value;
+    constexpr static bool fHeadDerivedFromExpected = std::is_base_of<ExpectedHeadFunctor, FHead>::value;
     // FHead is NullFunctor
     constexpr static bool fHeadIsNull = std::is_same<FHead, /*SAIF<ResHead>*/NullFunctor>::value;
     // Check that Functor takes ResHead type and transforms it into ResHead type
@@ -73,8 +73,9 @@ public:
     // Needed checks for given template parameters correctness.
 
     // fHead correctness
-    constexpr static bool c0 = fHeadDerivedFromGeneric || fHeadIsNull;
-    static_assert(c0, "c0 fails");
+    // todo: remove derived from generic?
+    constexpr static bool c0 = fHeadDerivedFromExpected || fHeadIsNull;
+    static_assert(c0, "c0 fails ");
     // fHeadCorrectness (1)
     constexpr static bool c1 = Implication<(!fHeadIsNull) && (readHeadIsNull), fHeadIsId>::value;
     static_assert(c1, "c1 fails");
@@ -91,7 +92,7 @@ public:
 public:
 
     // todo : may be pass as argument std::tuple<FHead, FArgs...>?
-    static std::tuple<ResHead, ResArgs...> readTypes(std::istream &is, FHead fHead, FArgs ... funcs) {
+    static std::tuple<ResHead, ResArgs...> readTypes(std::istream& is, FHead fHead, FArgs... funcs) {
         // Final result
         ResHead r;
 
@@ -106,7 +107,7 @@ public:
             using ToApplyTD = typename std::conditional<readHeadIsNull, NullT, ReadHead>::type;
 
             // Create needed. In fact NTIDM will be never created. It is just for compiler.
-            ToApplyTD *rdh = new ToApplyTD();
+            ToApplyTD* rdh = new ToApplyTD();
 
             // Read, call decompress and then delete it.
             is >> *rdh;
@@ -127,7 +128,7 @@ public:
 
             // Replace NullFunc with SAIF<ResHead>
             // And creating generic functor - what compiler wants to see
-            FheadFictive *_fHead = reinterpret_cast<FheadFictive *>(&fHead);
+            FheadFictive* _fHead = reinterpret_cast<FheadFictive*>(&fHead);
             Functor _f(*_fHead);
 
             ResHead rsh;

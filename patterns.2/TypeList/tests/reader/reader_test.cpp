@@ -101,18 +101,20 @@ TEST(DecompressReader, main) {
         return (int) (x * 3);
     };
 
+    auto quadruple = [](double x) -> double {
+        return x * 4;
+    };
 
-    using HALF = decltype(half);
-    using TRIPLE = decltype(triple);
-    using TOSTRING = decltype(transformers::toString<int>);
 
     using transformers::SuperDoubleInt;
     using transformers::SuperIntDouble;
     using transformers::SuperIntString;
 
+    using DoubleToDouble = GenericFunctor<double, TypeList<double>>;
+
     using TL1 = TypeList<int, double, std::string>;
-    using TL2 = TypeList<SuperDoubleInt, SuperIntDouble, SuperIntString>;
-    using TL3 = TypeList<NullFunctor, NullFunctor, NullFunctor>;
+    using TL2 = TypeList<SuperDoubleInt, /*SuperIntDouble*/NullType, SuperIntString>;
+    using TL3 = TypeList<NullFunctor, /*NullFunctor*/DoubleToDouble, NullFunctor>;
 
     using DR = DecompressReader<TL1, TL2, TL3>;
 
@@ -121,7 +123,7 @@ TEST(DecompressReader, main) {
     auto t1 = NullType();
 
     auto nf = NullFunctor();
-    auto resTuple = DR::readTypes(source, nf, nf, nf);
+    auto resTuple = DR::readTypes(source, nf, DoubleToDouble(quadruple), nf);
 
     source.close();
 
