@@ -58,8 +58,8 @@ public:
     constexpr static bool readHeadIsNull = std::is_same<ReadHead, NullType>::value;
     // Derived from GenericFunctor
     constexpr static bool fHeadDerivedFromGeneric = std::is_base_of<ExpectedHeadFunctor, FHead>::value;
-    // FHead is SingleArgNullFunc
-    constexpr static bool fHeadIsNull = std::is_same<FHead, SingleArgNullFunc>::value;
+    // FHead is NullFunctor
+    constexpr static bool fHeadIsNull = std::is_same<FHead, /*SAIF<ResHead>*/NullFunctor>::value;
     // Check that Functor takes ResHead type and transforms it into ResHead type
     constexpr static bool fHeadIsId = std::is_base_of<IdFunctor, FHead>::value;
 
@@ -75,6 +75,7 @@ public:
     // fHead correctness
     constexpr static bool c0 = fHeadDerivedFromGeneric || fHeadIsNull;
     static_assert(c0, "c0 fails");
+    // fHeadCorrectness (1)
     constexpr static bool c1 = Implication<(!fHeadIsNull) && (readHeadIsNull), fHeadIsId>::value;
     static_assert(c1, "c1 fails");
     // One of readHead & fHead must be Null
@@ -89,39 +90,45 @@ public:
 
 public:
     static std::tuple<ResHead, ResArgs...> readTypes(std::istream &is, FHead fHead, FArgs ... funcs) {
-        if (readHeadIsNull) {
-            // NullType in the second list.
-            // Decompress by fHead
-            assert(!fHeadIsNull);
+//        using ArgType = typename std::conditional<readHeadIsNull, ResHead, ReadHead>::type;
+        using Functor = GenericFunctor<ResHead, TypeList<ResHead>>;
+        using ID = SAIF<ResHead>;
 
-            // read as it is and decompress by fHead
-            ResHead resObj;
-            is >> resObj;
+//        ReadHead rdh;
 
-            using ToApply = std::conditional<fHeadIsNull, NullType, FHead>::type;
 
-            // put it in the resulting tuple
-            std::tuple < ResHead > head = std::make_tuple((resObj));
-            std::tuple<ResArgs...> tail = TailReader::readTypes(is, funcs...);
+        // Trick just for compiler.
+        using NullF = SAIF<ResHead>;
+        using NullT = NTIDM<ResHead>;
+        using ToApplyF = typename std::conditional<readHeadIsNull, Functor, NullF>::type;
+        using ToApplyTD = typename std::conditional<readHeadIsNull, NullT, ReadHead>::type;
 
-            return std::tuple_cat(head, tail);
+        using FheadFictive = typename std::conditional<readHeadIsNull, FHead, NullF>::type;
+
+        // Replace NullFunc with SAIF<ResHead>
+        FheadFictive *_fHead = reinterpret_cast<FheadFictive *>(&fHead);
+        // Creating generic functor - what compiler wants to see
+        Functor _f(*_fHead);
+
+        // Typed read results
+        ToApplyTD *rdh = new ToApplyTD();
+        ResHead rsh;
+
+        // Final result
+        ResHead r;
+
+        if (!readHeadIsNull) {
+            is >> *rdh;
+            r = rdh->decompress();
         } else {
-            // Not NullType in the second list
-            // Then use .decompress from that type
-            assert(!readHeadIsNull);
-
-            ReadHead readObj;
-            is >> readObj;
-
-            // decompress it by method
-            ResHead resHead = readObj.decompress();
-
-            // put it in the resulting tuple
-            std::tuple < ResHead > head = std::make_tuple(resHead);
-            std::tuple<ResArgs...> tail = TailReader::readTypes(is, funcs...);
-
-            return std::tuple_cat(head, tail);
+            is >> rsh;
+            r = _f(rsh);
         }
+
+        std::tuple < ResHead > head = std::make_tuple(r);
+        std::tuple<ResArgs...> tail = TailReader::readTypes(is, funcs...);
+
+        return std::tuple_cat(head, tail);
     };
 
 };

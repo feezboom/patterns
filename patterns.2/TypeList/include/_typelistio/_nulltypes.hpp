@@ -5,13 +5,26 @@
 #ifndef TYPELIST_NULLTYPES_HPP
 #define TYPELIST_NULLTYPES_HPP
 
-template<typename R, typename T>
-class SingleArgNullFunc {
-public:
+class NullFunctor {
+};
 
-    R operator()(T &arg) {
+// Single argument id functor
+template<typename ArgType>
+class SAIF {
+public:
+    ArgType operator()(const ArgType &arg) const {
         assert(false);
-        return R();
+        return arg;
+    }
+};
+
+// Null type id decompress method
+template<typename ResType>
+class NTIDM {
+public:
+    ResType &decompress() const {
+        return ResType();
+        assert(false);
     }
 };
 

@@ -51,6 +51,10 @@ public:
         return _invoker->operator()(args...);
     };
 
+    _Result apply(_ArgTypes... args) {
+        return operator()(args...);
+    }
+
 private:
     std::shared_ptr<_IInvokerType> _invoker;
 };

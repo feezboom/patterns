@@ -51,7 +51,7 @@ namespace transformers {
 
     struct SuperIntDouble {
         double decompress() {
-            return double(x / 2.0);
+            return x / 2.0;
         }
 
         int x;
@@ -65,7 +65,7 @@ namespace transformers {
     struct SuperIntString {
         std::string decompress() {
             std::stringstream ss;
-            ss >> x;
+            ss << (x * 2);
             return ss.str();
         }
 
@@ -112,15 +112,20 @@ TEST(DecompressReader, main) {
 
     using TL1 = TypeList<int, double, std::string>;
     using TL2 = TypeList<SuperDoubleInt, SuperIntDouble, SuperIntString>;
-    using TL3 = TypeList<SingleArgNullFunc, SingleArgNullFunc, SingleArgNullFunc>;
+//    using TL3 = TypeList<SAIF<int>, SAIF<double>, SAIF<std::string>>;
+    using TL3 = TypeList<NullFunctor, NullFunctor, NullFunctor>;
 
     using DR = DecompressReader<TL1, TL2, TL3>;
 
     std::fstream source("tests/reader/data/dr0.txt", std::ios_base::in);
 
-    auto f1 = SingleArgNullFunc < int, SuperDoubleInt>();
-    auto f2 = SingleArgNullFunc < double, SuperIntDouble>();
-    auto f3 = SingleArgNullFunc<std::string, SuperIntString>();
+//    auto f1 = SAIF<int>();
+//    auto f2 = SAIF<double>();
+//    auto f3 = SAIF<std::string>();
+//
+    auto f1 = NullFunctor();
+    auto f2 = NullFunctor();
+    auto f3 = NullFunctor();
     auto resTuple = DR::readTypes(source, f1, f2, f3);
 
     source.close();

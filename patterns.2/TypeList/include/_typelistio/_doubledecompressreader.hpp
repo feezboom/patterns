@@ -33,7 +33,7 @@ class DoubleDecompressReader
             TypeList<ResArgs...>,
             TypeList<ToReadArgs...>,
             TypeList<FuncArgs...>>;
-    using NullFunc = SingleArgNullFunc<ResHead, ToReadHead>;
+//    using NullFunc = NullFunctor<ResHead, ToReadHead>;
 
 public:
     static std::tuple<ResHead, ResArgs...> readTypes(std::istream &is, FuncHead fHead, FuncArgs &&... fArgs) {
@@ -48,7 +48,7 @@ private:
     static std::tuple<ResHead> _readFirstType(std::istream &is, FuncHead &&f) {
 
         bool doTypeDecompression = std::is_same<ToReadHead, NullType>::value;
-        bool doFunctorDecompression = std::is_same<FuncHead, NullFunc>::value;
+        bool doFunctorDecompression = std::is_same<FuncHead, NullFunctor>::value;
 
         ResHead res;
         ToReadHead readHead;
