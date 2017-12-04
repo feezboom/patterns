@@ -3,7 +3,6 @@
 //
 
 #include <sstream>
-#include <string>
 #include <gtest/gtest.h>
 #include <typelistio.h>
 #include <_typelistio/_decompressreader.hpp>
@@ -190,7 +189,8 @@ TEST(DoubleDecompressReader, main) {
     std::fstream ddr0("tests/reader/data/ddr0.txt", std::ios_base::in);
     std::tuple<int, double, std::string> r = DDR::readTypes(ddr0, f0, f1, f2);
 
-
-
+    ASSERT_EQ((std::get<0>(r)), 8);
+    ASSERT_EQ((std::get<1>(r)), 10);
+    ASSERT_EQ((std::get<2>(r)), "12");
 
 }

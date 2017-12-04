@@ -50,39 +50,47 @@ public:
 
     static std::tuple<ResHead> _readFirstType(std::istream &is, FHead f) {
 
-
         ResHead res;
         ReadHead readHead;
 
-        // the same as in the decompressReader, just compiler trick.
-        // ReadHead cases:
-        // 1) ReadHead can be null
-        using ReadHeadForNullCase = FTIT<ResHead, ResHead>;
-        // 2) ReadHead can be decompressable Type
-        // nothing special
 
         // FHead cases:
         // 1) FHead can be NullFunctor
-        using TypeDecompressionResult = decltype(readHead.decompress());
+        using TypeDecompressionResult =
+        typename std::conditional<!readHeadIsNull, decltype(readHead.decompress()), NullType>::type;
         using FHeadForNullCase = FTIF<TypeDecompressionResult, ResHead>;
 
-
-
-        TypeDecompressionResult r0;
+        // actual type of r0, which will appear
+        using TName = typename std::conditional<!readHeadIsNull, TypeDecompressionResult, ResHead>::type;
+        TName r0;
 
         if (!readHeadIsNull) {
+            // that means that readHead.decompress returns TypeDecompressionResult.
+            // actually r0 has such type. But compiler needs cast for other cases.
+
+            // Fictive cast
+            TName* fictive = reinterpret_cast<TName*>(&r0);
             is >> readHead;
-            r0 = readHead.decompress();
+            *fictive = readHead.decompress();
         } else {
+            // that means that we don't have decompressable type
             is >> res;
         }
 
-        if (doFunctorDecompression) {
-            if (doTypeDecompression) {
-                res = f(r0);
-            } else {
-                res = f(res);
-            }
+        if (!fHeadIsNull) {
+//            if (!readHeadIsNull) {
+//                // that means that f takes TypeDecompression result
+//                // actually r0 has such type. But compiler needs cast for other cases.
+//                TName* fictive = reinterpret_cast<TName*>(&r0);
+//                res = f(*fictive);
+//            } else {
+//                // that means than f takes ResHead and gives ResHead
+//                // actually r0 has ResHead type but compiler needs ca
+//                TName* fictive = reinterpret_cast<TName*>(&r0);
+//                res = f(*fictive);
+//            }
+            TName* fictive = reinterpret_cast<TName*>(&r0);
+            res = f(*fictive);
         }
 
         return std::make_tuple(res);
