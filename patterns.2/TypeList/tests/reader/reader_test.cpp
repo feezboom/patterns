@@ -124,8 +124,6 @@ TEST(DecompressReader, main) {
     auto resTuple = DR::readTypes(source, nf, nf, nf);
 
     source.close();
-
-//    using DDR = DoubleDecompressReader<
 }
 
 TEST(DoubleDecompressReader, main) {

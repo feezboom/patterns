@@ -17,7 +17,7 @@
 // DecompressReader
 template<typename ResTL, typename GivenTL, typename FuncTL>
 class DecompressReader {
-    static_assert(SameLength<ResTL, GivenTL, FuncTL>::value);
+    static_assert(SameLength<ResTL, GivenTL, FuncTL>::value, "Typelists must have same length");
 };
 
 template<typename ResHead, typename ...ResArgs,

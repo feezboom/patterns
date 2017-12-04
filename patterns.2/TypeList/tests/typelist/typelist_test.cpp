@@ -19,7 +19,7 @@ TEST(TypeList, Main) {
 }
 
 TEST(TypeList, IsEmpty) {
-    ASSERT_TRUE(IsEmpty<list0>::value);
+    ASSERT_FALSE(!IsEmpty<list0>::value);
     ASSERT_FALSE(IsEmpty<list1>::value);
     ASSERT_FALSE(IsEmpty<list2>::value);
     ASSERT_FALSE(IsEmpty<list3>::value);
@@ -29,11 +29,11 @@ TEST(TypeList, IsEmpty) {
 
 TEST(TypeList, Contains) {
     ASSERT_FALSE((Contains<int, list0>::value));
-    ASSERT_TRUE((Contains<int, list1>::value));
-    ASSERT_TRUE((Contains<int, list2>::value));
-    ASSERT_TRUE((Contains<int, list3>::value));
-    ASSERT_TRUE((Contains<int, list4>::value));
-    ASSERT_TRUE((Contains<int, list5>::value));
+    ASSERT_FALSE(!(Contains<int, list1>::value));
+    ASSERT_FALSE(!(Contains<int, list2>::value));
+    ASSERT_FALSE(!(Contains<int, list3>::value));
+    ASSERT_FALSE(!(Contains<int, list4>::value));
+    ASSERT_FALSE(!(Contains<int, list5>::value));
 
     ASSERT_FALSE((Contains<bool, list0>::value));
     ASSERT_FALSE((Contains<bool, list1>::value));
@@ -42,20 +42,20 @@ TEST(TypeList, Contains) {
     ASSERT_FALSE((Contains<bool, list4>::value));
     ASSERT_FALSE((Contains<bool, list5>::value));
 
-    ASSERT_TRUE((Contains<int, list5>::value));
-    ASSERT_TRUE((Contains<double, list5>::value));
-    ASSERT_TRUE((Contains<float, list5>::value));
-    ASSERT_TRUE((Contains<char, list5>::value));
-    ASSERT_TRUE((Contains<std::string, list5>::value));
+    ASSERT_FALSE(!(Contains<int, list5>::value));
+    ASSERT_FALSE(!(Contains<double, list5>::value));
+    ASSERT_FALSE(!(Contains<float, list5>::value));
+    ASSERT_FALSE(!(Contains<char, list5>::value));
+    ASSERT_FALSE(!(Contains<std::string, list5>::value));
 }
 
 TEST(TypeList, Equal) {
-    ASSERT_TRUE((Equal<list0, list0>::value));
-    ASSERT_TRUE((Equal<list1, list1>::value));
-    ASSERT_TRUE((Equal<list2, list2>::value));
-    ASSERT_TRUE((Equal<list3, list3>::value));
-    ASSERT_TRUE((Equal<list4, list4>::value));
-    ASSERT_TRUE((Equal<list5, list5>::value));
+    ASSERT_FALSE(!(Equal<list0, list0>::value));
+    ASSERT_FALSE(!(Equal<list1, list1>::value));
+    ASSERT_FALSE(!(Equal<list2, list2>::value));
+    ASSERT_FALSE(!(Equal<list3, list3>::value));
+    ASSERT_FALSE(!(Equal<list4, list4>::value));
+    ASSERT_FALSE(!(Equal<list5, list5>::value));
 
     ASSERT_FALSE((Equal<list1, list2>::value));
     ASSERT_FALSE((Equal<list2, list3>::value));
