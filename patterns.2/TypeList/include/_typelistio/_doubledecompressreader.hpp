@@ -57,16 +57,17 @@ public:
         // the same as in the decompressReader, just compiler trick.
         // ReadHead cases:
         // 1) ReadHead can be null
-        using ReadHeadForNullCase = NTIDM<ResHead>;
+        using ReadHeadForNullCase = FTIT<ResHead, ResHead>;
         // 2) ReadHead can be decompressable Type
         // nothing special
 
         // FHead cases:
         // 1) FHead can be NullFunctor
-        using FHeadForNullCase = SAIF<ResHead>;
-
-
         using TypeDecompressionResult = decltype(readHead.decompress());
+        using FHeadForNullCase = FTIF<TypeDecompressionResult, ResHead>;
+
+
+
         TypeDecompressionResult r0;
 
         if (!readHeadIsNull) {

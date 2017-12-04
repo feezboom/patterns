@@ -8,6 +8,22 @@
 class NullFunctor {
 };
 
+template <typename From, typename To>
+class FTIF {
+    To operator()(const From&) const {
+        assert(false);
+        return To();
+    }
+};
+
+template <typename From, typename To>
+class FTIT {
+    To decompress(const From&) const {
+        assert(false);
+        return To();
+    }
+};
+
 // Single argument id functor
 template<typename ArgType>
 class SAIF {
@@ -22,9 +38,9 @@ public:
 template<typename ResType>
 class NTIDM {
 public:
-    ResType &decompress() const {
-        return ResType();
+    ResType decompress() const {
         assert(false);
+        return ResType();
     }
 };
 
