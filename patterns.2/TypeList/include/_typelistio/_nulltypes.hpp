@@ -11,6 +11,22 @@
 class NullFunctor {
 };
 
+template <typename From, typename To>
+class FTIF {
+    To operator()(const From&) const {
+        assert(false);
+        return To();
+    }
+};
+
+template <typename From, typename To>
+class FTIT {
+    To decompress(const From&) const {
+        assert(false);
+        return To();
+    }
+};
+
 // Single argument id functor
 template<typename ArgType>
 class SAIF {
