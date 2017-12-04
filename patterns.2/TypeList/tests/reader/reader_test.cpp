@@ -3,6 +3,7 @@
 //
 
 #include <sstream>
+#include <string>
 #include <gtest/gtest.h>
 #include <typelistio.h>
 #include <_typelistio/_decompressreader.hpp>
@@ -36,6 +37,17 @@ namespace transformers {
         Functor() : GenericFunctor<To, TypeList<FromArgs...>>(Function()) {};
     };
 
+    struct SuperIntInt {
+        int decompress() {
+            return x*2;
+        }
+        int x;
+    };
+
+    std::istream &operator>>(std::istream &is, SuperIntInt &sii) {
+        is >> sii.x;
+    }
+
     struct SuperDoubleInt {
         int decompress() {
             return int(x * 2);
@@ -51,7 +63,7 @@ namespace transformers {
 
     struct SuperIntDouble {
         double decompress() {
-            return x / 2.0;
+            return x * 2.0;
         }
 
         int x;
@@ -127,5 +139,56 @@ TEST(DecompressReader, main) {
 }
 
 TEST(DoubleDecompressReader, main) {
+    // Decompress available types
+    using transformers::SuperIntInt;
+    using transformers::SuperDoubleInt;
+    using transformers::SuperIntDouble;
+    using transformers::SuperIntString;
+
+    // Decompress functors
+    auto intDouble = [](int x) -> double {
+        return x * 2.0;
+    };
+
+    auto doubleInt = [](double x) -> int {
+        return (int) (x * 2);
+    };
+
+    auto intString = [](int x) -> std::string {
+        std::stringstream ss;
+        ss << (x * 2);
+        return ss.str();
+    };
+
+    auto stringInt = [](std::string x) -> int {
+        return std::stoi(x);
+    };
+
+
+    using IntDoubleFunctor = GenericFunctor<double, TypeList<int>>;
+    using DoubleIntFunctor = GenericFunctor<int, TypeList<double>>;
+    using IntStringFunctor = GenericFunctor<std::string, TypeList<int>>;
+    using StringIntFunctor = GenericFunctor<int, TypeList<std::string>>;
+
+    // final result types
+    using TL1 = TypeList<int, double, std::string>; // Get finally
+    // reads (int, double, int) gives (double, int, int)
+    using TL2 = TypeList<SuperIntDouble, SuperDoubleInt, SuperIntInt>;
+    // takes (double, int, int) gives (int, double, string)
+    using TL3 = TypeList<DoubleIntFunctor, IntDoubleFunctor, IntStringFunctor>; // get from tl2 -> transform
+
+    auto f0 = DoubleIntFunctor(doubleInt);
+    auto f1 = IntDoubleFunctor(intDouble);
+    auto f2 = IntStringFunctor(intString);
+
+    using DDR = DoubleDecompressReader<TL1, TL2, TL3>;
+
+    // test with (int, double, int) needed
+
+    std::fstream ddr0("tests/reader/data/ddr0.txt", std::ios_base::in);
+    std::tuple<int, double, std::string> r = DDR::readTypes(ddr0, f0, f1, f2);
+
+
+
 
 }
