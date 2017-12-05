@@ -9,33 +9,6 @@
 
 namespace transformers {
 
-    template<typename From, typename To, int _divider>
-    struct Divider {
-        To operator()(From x) {
-            return static_cast<To>(x / _divider);
-        }
-    };
-
-    template<typename From, typename To, int _multiplier>
-    struct Multiplier {
-        To operator()(From x) {
-            return static_cast<To>(x * _multiplier);
-        }
-    };
-
-    template<typename R>
-    std::string toString(const R &x) {
-        std::stringstream sstream;
-        sstream << x;
-        return sstream.str();
-    }
-
-    template<typename Function, typename To, typename ...FromArgs>
-    class Functor : public GenericFunctor<To, TypeList<FromArgs...>> {
-    public:
-        Functor() : GenericFunctor<To, TypeList<FromArgs...>>(Function()) {};
-    };
-
     struct SuperIntInt {
         int decompress() {
             return x*2;
@@ -136,6 +109,10 @@ TEST(DecompressReader, main) {
     auto nf = NullFunctor();
     auto resTuple = DR::readTypes(source, nf, DoubleToDouble(quadruple), nf);
 
+    ASSERT_EQ(std::get<0>(resTuple), 11);
+    ASSERT_EQ(std::get<1>(resTuple), 92);
+    ASSERT_EQ(std::get<2>(resTuple), "14");
+
     source.close();
 }
 
@@ -187,10 +164,10 @@ TEST(DoubleDecompressReader, main) {
     // test with (int, double, int) needed
 
     std::fstream ddr0("tests/reader/data/ddr0.txt", std::ios_base::in);
-    std::tuple<int, double, std::string> r = DDR::readTypes(ddr0, f0, f1, f2);
+    auto r = DDR::readTypes(ddr0, f0, f1, f2);
 
-    ASSERT_EQ((std::get<0>(r)), 8);
-    ASSERT_EQ((std::get<1>(r)), 10);
-    ASSERT_EQ((std::get<2>(r)), "12");
+    ASSERT_EQ(std::get<0>(r), 8);
+    ASSERT_EQ(std::get<1>(r), 10);
+    ASSERT_EQ(std::get<2>(r), "12");
 
 }

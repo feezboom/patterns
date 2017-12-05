@@ -53,15 +53,12 @@ public:
         ResHead res;
         ReadHead readHead;
 
-
-        // FHead cases:
-        // 1) FHead can be NullFunctor
         using TypeDecompressionResult =
         typename std::conditional<!readHeadIsNull, decltype(readHead.decompress()), NullType>::type;
-        using FHeadForNullCase = FTIF<TypeDecompressionResult, ResHead>;
 
         // actual type of r0, which will appear
         using TName = typename std::conditional<!readHeadIsNull, TypeDecompressionResult, ResHead>::type;
+
         TName r0;
 
         if (!readHeadIsNull) {
@@ -78,17 +75,6 @@ public:
         }
 
         if (!fHeadIsNull) {
-//            if (!readHeadIsNull) {
-//                // that means that f takes TypeDecompression result
-//                // actually r0 has such type. But compiler needs cast for other cases.
-//                TName* fictive = reinterpret_cast<TName*>(&r0);
-//                res = f(*fictive);
-//            } else {
-//                // that means than f takes ResHead and gives ResHead
-//                // actually r0 has ResHead type but compiler needs ca
-//                TName* fictive = reinterpret_cast<TName*>(&r0);
-//                res = f(*fictive);
-//            }
             TName* fictive = reinterpret_cast<TName*>(&r0);
             res = f(*fictive);
         }
