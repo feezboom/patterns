@@ -7,27 +7,21 @@
 
 #include "_typelist.hpp"
 
-namespace deprecated {
+template<typename TL>
+struct [[deprecated]] TLLength;
 
-    template<typename TL>
-    struct Length {
-    };
+template<typename ZeroType, typename ...Args>
+struct [[deprecated]] TLLength<TypeList<ZeroType, Args...>> {
+    constexpr static std::size_t value = TLLength<TypeList<Args...>>::value + 1;
+};
 
-    template<typename ZeroType, typename ...Args>
-    struct Length<TypeList<ZeroType, Args...>> {
-        constexpr static std::size_t value = Length<TypeList<Args...>>::value + 1;
-    };
-
-    template<>
-    struct Length<TypeList<>> {
-        constexpr static std::size_t value = 0;
-    };
-
-}
+template<>
+struct [[deprecated]] TLLength<TypeList<>> {
+    constexpr static std::size_t value = 0;
+};
 
 template<typename TL>
-struct Length {
-};
+struct Length;
 
 template<typename ...Args>
 struct Length<TypeList<Args...>> {

@@ -12,6 +12,7 @@
 #include <_typelistio/_dumbprinter.hpp>
 #include <_typelistio/_allocsize.hpp>
 #include <_typelistio/_reader.hpp>
+#include <_typelistio/_decompressreader.hpp>
 #include <_typelistio/_doubledecompressreader.hpp>
 
 #endif //TYPELIST_TYPELISTIO_H

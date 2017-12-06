@@ -18,6 +18,22 @@ TEST(TypeList, Main) {
     ASSERT_EQ(typeid(TypeAt<0, list4>::Result).name(), typeid(int).name());
 }
 
+TEST(TypeList, Length) {
+    ASSERT_TRUE(TLLength<list0>::value == 0);
+    ASSERT_TRUE(TLLength<list1>::value == 1);
+    ASSERT_TRUE(TLLength<list2>::value == 2);
+    ASSERT_TRUE(TLLength<list3>::value == 3);
+    ASSERT_TRUE(TLLength<list4>::value == 4);
+    ASSERT_TRUE(TLLength<list5>::value == 5);
+
+    ASSERT_TRUE(Length<list0>::value == 0);
+    ASSERT_TRUE(Length<list1>::value == 1);
+    ASSERT_TRUE(Length<list2>::value == 2);
+    ASSERT_TRUE(Length<list3>::value == 3);
+    ASSERT_TRUE(Length<list4>::value == 4);
+    ASSERT_TRUE(Length<list5>::value == 5);
+}
+
 TEST(TypeList, IsEmpty) {
     ASSERT_FALSE(!IsEmpty<list0>::value);
     ASSERT_FALSE(IsEmpty<list1>::value);

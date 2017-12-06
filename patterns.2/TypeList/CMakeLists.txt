@@ -72,7 +72,10 @@ set(TYPELISTIO_SOURCES
         include/_typelistio/_dumbprinter.hpp
         include/_typelistio/_reader.hpp
         include/_typelistio/_doubledecompressreader.hpp
-        include/typelistio.h include/_typelistio/_nulltypes.hpp include/_typelistio/_readerutils.hpp include/_typelistio/_decompressreader.hpp)
+        include/_typelistio/_nulltypes.hpp
+        include/_typelistio/_readerutils.hpp
+        include/_typelistio/_decompressreader.hpp
+        include/typelistio.h )
 set(GENERICFUNCTOR_SOURCES
         include/_genericfunctor/_genericfunctor.hpp
         include/genericfunctor.h)
@@ -84,13 +87,20 @@ set(ALL_SOURCES
 
 
 # Tests itself
+set(TESTS_AUX_SRC
+        tests/reader/_aux/_aux.h
+        tests/reader/_aux/_aux.cpp)
 set(TYPELIST_TESTS
         tests/typelist/typelist_test.cpp)
 set(READER_TESTS
-        tests/reader/dumb_reader_test.cpp tests/reader/reader_test.cpp)
+        tests/reader/dumb_reader_test.cpp
+        tests/reader/reader_test.cpp
+        tests/reader/doubledecompressTest.cpp
+        tests/reader/decompressTest.cpp)
 set(GENERICFUNCTOR_TESTS
         tests/genericFunctor/genericfunctor_test.cpp)
 set(TEST_SOURCES
+        ${TESTS_AUX_SRC}
         ${TYPELIST_TESTS}
         ${READER_TESTS}
         ${GENERICFUNCTOR_TESTS}

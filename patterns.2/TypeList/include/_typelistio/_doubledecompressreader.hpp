@@ -27,6 +27,8 @@ class DoubleDecompressReader
     constexpr static bool readHeadIsNull = std::is_same<ReadHead, NullType>::value;
     constexpr static bool fHeadIsNull = std::is_same<FHead, NullFunctor>::value;
 
+    // todo: add static_assert() checks.
+
 // Reader for one template argument
     template<typename T1, typename T2, typename T3>
     using OneArgReader = DoubleDecompressReader<TypeList<T1>, TypeList<T2>, TypeList<T3>>;
@@ -51,32 +53,46 @@ public:
     static std::tuple<ResHead> _readFirstType(std::istream &is, FHead f) {
 
         ResHead res;
-        ReadHead readHead;
 
-        using TypeDecompressionResult =
-        typename std::conditional<!readHeadIsNull, decltype(readHead.decompress()), NullType>::type;
+        // Compiler will always need decompress method from ReadHead.
+        // Such type will always have decompress
+        using NullT = NTIDM<ResHead>;
+        using ReadHeadFixed = typename std::conditional<readHeadIsNull, NullT, ReadHead>::type;
+        ReadHeadFixed readHeadFixed;
 
-        // actual type of r0, which will appear
-        using TName = typename std::conditional<!readHeadIsNull, TypeDecompressionResult, ResHead>::type;
+        // Decompression result will be ResHead if NullType was passed due to ReadHeadFixed
+        using DecompressionResultType = decltype(readHeadFixed.decompress());
+        DecompressionResultType r0;
 
-        TName r0;
-
-        if (!readHeadIsNull) {
-            // that means that readHead.decompress returns TypeDecompressionResult.
-            // actually r0 has such type. But compiler needs cast for other cases.
-
-            // Fictive cast
-            TName* fictive = reinterpret_cast<TName*>(&r0);
-            is >> readHead;
-            *fictive = readHead.decompress();
-        } else {
+        // Needs decompression
+        if (readHeadIsNull) {
             // that means that we don't have decompressable type
-            is >> res;
+            is >> (*reinterpret_cast<ResHead*>(&r0));
+        } else {
+            // If decompressor type is Null (actually during runtime this won't happen)
+            // it was substituted with type having decompress method.
+            // This is just for compiler
+
+            is >> readHeadFixed;
+            /* DecompressionResultType */ r0 = readHeadFixed.decompress();
         }
 
-        if (!fHeadIsNull) {
-            TName* fictive = reinterpret_cast<TName*>(&r0);
-            res = f(*fictive);
+
+        // Needs to apply functor
+        if (fHeadIsNull) {
+            // Means that decompress gives ResHead (in case when FHead is NullFunctor)
+            constexpr static bool x = std::is_same<decltype(readHeadFixed.decompress()), ResHead>::value;
+            static_assert(readHeadIsNull || !fHeadIsNull || x);
+
+            res = *reinterpret_cast<ResHead *>(&r0);
+        } else {
+            // If functor is Null (actually during runtime this won't happen).
+            // This is just for compiler
+            using NullF = SAIF<ResHead>;
+            using FType = typename std::conditional<fHeadIsNull, NullF, FHead>::type;
+
+            FType *fFictive = reinterpret_cast<FType *>(&f);
+            res = (*fFictive)(r0);
         }
 
         return std::make_tuple(res);
